@@ -6,14 +6,32 @@
 <title>Thumbs Down</title>
 <meta name="theme-color" content="#0b1220">
 <style>
-:root{ --bg:#0b1220; --card:#0f172a; --fg:#e6e9ef; --muted:#93a3b8;
---brand:#0ea5e9; --down:#22c55e; --chip:#0d1326; --chip-b:#101a33; --shadow:0 14px 40px rgba(0,0,0,.35) }
+:root{
+--bg:#0b1220; --card:#0f172a; --fg:#e6e9ef; --muted:#93a3b8;
+--brand:#0ea5e9; --accent-start:#facc15; /* yellow */
+--accent-done:#22c55e; /* green */
+--chip:#0d1326; --chip-b:#101a33; --shadow:0 14px 40px rgba(0,0,0,.35)
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:16px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
+font:16px/1.3 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial}
+
 .wrap{min-height:100%;display:grid;place-items:center;padding:14px}
-.card{width:min(100%,740px);background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:18px;box-shadow:var(--shadow);padding:14px 14px 16px}
-.head{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin:4px 4px 8px}
-.logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#22c55e,var(--brand));display:grid;place-items:center;box-shadow:0 8px 18px rgba(14,165,233,.35)}
+.card{width:min(100%,740px);background:var(--card);border:1px solid rgba(255,255,255,.06);
+border-radius:18px;box-shadow:var(--shadow);padding:14px 14px 22px}
+
+/* Header */
+.head{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;margin:6px 6px 6px}
+.brand{display:flex;gap:10px;align-items:center}
+.logo{
+width:50px;height:50px;border-radius:14px;
+background:linear-gradient(135deg,#0e1322,#0b1220);
+display:grid;place-items:center;box-shadow:0 8px 18px rgba(0,0,0,.35);position:relative;
+border:1px solid rgba(255,255,255,.06)
+}
+.logo svg{width:26px;height:26px; fill:var(--accent-start); transition:fill .25s ease, transform .25s ease}
+.logo.active svg{ fill:var(--accent-done) }
+
 .titles{display:grid;gap:2px}
 h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 .sub{margin:0;color:var(--muted);font-weight:700;font-size:12px}
@@ -22,6 +40,7 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 .btn-ghost{background:#0d1326;color:#e6e9ef;border:1px solid rgba(255,255,255,.12)}
 .hidden{display:none}
 
+/* Host name entry */
 .setup{margin:10px 2px;display:grid;gap:10px}
 .hint{color:var(--muted);font-size:12px;margin-top:-2px}
 .grid-names{display:grid;gap:8px;grid-template-columns:1fr 1fr}
@@ -30,20 +49,48 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 .namebox input{width:100%;border:0;background:transparent;color:var(--fg);font:600 16px/1.2 system-ui;outline:none;padding:2px 0}
 .toolbar{display:flex;justify-content:space-between;gap:8px}
 
-.table-wrap{display:grid;place-items:center}
-.table{width:min(100%,720px);aspect-ratio:16/10;position:relative;border-radius:18px;background:linear-gradient(180deg,#0f172a,#0b1220);outline:1px solid rgba(255,255,255,.06);box-shadow:var(--shadow)}
-.edge{position:absolute;inset:12% 8%;border-radius:999px;border:2px dashed rgba(255,255,255,.08);pointer-events:none}
+/* Table */
+.header-gap{height:16px} /* extra breathing room */
+.table-wrap{display:grid;place-items:center;margin-top:8px}
+.table{
+width:min(100%,720px);aspect-ratio:16/10;position:relative;border-radius:22px;
+background:
+radial-gradient(60% 80% at 50% 40%, rgba(255,255,255,.06), rgba(255,255,255,0) 60%),
+linear-gradient(180deg,#0f172a,#0b1220);
+outline:1px solid rgba(255,255,255,.08);
+box-shadow: inset 0 10px 22px rgba(255,255,255,.04), inset 0 -8px 20px rgba(0,0,0,.35), var(--shadow)
+}
+.edge{
+position:absolute;inset:8% 6%;border-radius:999px;border:2px solid rgba(255,255,255,.12);
+box-shadow: inset 0 0 0 6px rgba(255,255,255,.03);
+pointer-events:none
+}
 .board{position:absolute;inset:0}
-.chip{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;gap:2px;width:58px;height:58px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-b);box-shadow:0 8px 18px rgba(0,0,0,.35);cursor:pointer;user-select:none;touch-action:manipulation;transition:transform .28s ease, filter .12s ease}
-.chip.down{ background:rgba(34,197,94,.16); border-color:rgba(34,197,94,.5) }
-.ic{font-size:16px;transition:transform .28s ease, color .18s ease}
-.chip.down .ic{ transform:rotate(180deg); color:#22c55e }
-.nm{font-weight:800;font-size:10px;letter-spacing:.1px;text-align:center;color:#e6e9ef;padding:0 6px;max-width:50px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chip.disabled{opacity:.55; cursor:not-allowed; pointer-events:none}
 
+.chip{
+position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;gap:2px;
+width:58px;height:58px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-b);
+box-shadow:0 8px 18px rgba(0,0,0,.35);cursor:pointer;user-select:none;touch-action:manipulation;
+transition:transform .18s ease, filter .12s ease
+}
+.chip:active{ transform:translate(-50%,-50%) scale(.96) }
+
+.ic{display:grid;place-items:center}
+.ic svg{width:18px;height:18px;fill:#e6e9ef;transition:transform .28s ease, fill .18s ease}
+/* exact 180° to end down, then remain */
+.chip.down .ic svg{ transform:rotate(180deg); fill:var(--accent-done) }
+
+.nm{font-weight:800;font-size:10px;letter-spacing:.1px;text-align:center;color:#e6e9ef;padding:0 6px;max-width:50px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.chip.disabled{opacity:.55;cursor:not-allowed}
+/* ‘nope’ wobble when trying to press another thumb after you’ve tapped */
+@keyframes wobble{ 0%,100%{transform:translate(-50%,-50%)} 25%{transform:translate(calc(-50% - 6px),-50%)} 75%{transform:translate(calc(-50% + 6px),-50%)} }
+.chip.wobble{ animation:wobble .28s ease }
+
+/* Toast */
 .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#0d1326;border:1px solid rgba(255,255,255,.12);padding:10px 14px;border-radius:12px;font-weight:900;z-index:50}
 
-/* Modal */
+/* Modal (penultimate) */
 .modal{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);z-index:60}
 .sheet{width:min(92%,560px);background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:grid;gap:10px}
 .h{font-weight:900;font-size:18px}
@@ -56,17 +103,29 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 <div class="wrap">
 <div class="card">
 <div class="head">
-<div class="logo" aria-hidden="true">👍</div>
-<div class="titles"><h1>Thumbs Down</h1><p class="sub">Don’t Be Such a Loser</p></div>
+<div class="brand">
+<div id="logo" class="logo" aria-hidden="true">
+<!-- Thumbs-down SVG logo -->
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M10.5 3c.7 0 1.3.4 1.6 1l2.3 4.5h4.1c1.7 0 3 1.3 3 3 0 .5-.1 1-.4 1.4l-4.8 7.6c-.4.7-1.2 1.1-2 .9-.8-.1-1.4-.8-1.5-1.6l-.4-3.8H9c-1.7 0-3-1.3-3-3v-8c0-1.1.9-2 2-2h2.5Zm-7.5 2h3v10h-3V5Z"/>
+</svg>
+</div>
+<div class="titles">
+<h1>Thumbs Down</h1>
+<p class="sub">Tap or be tasked.</p>
+</div>
+</div>
 <button id="resetBtn" class="btn btn-ghost hidden">Reset</button>
 </div>
 
+<div class="header-gap"></div>
+
 <!-- Reveal view -->
 <div id="revealView" class="hidden">
-<div class="reveal">
-<div class="headline" id="headline"></div>
-<div class="meta" id="dareLine"></div>
-<div class="meta" id="meta"></div>
+<div class="reveal" style="text-align:center">
+<div class="headline" id="headline" style="font-size:22px;font-weight:900;margin:4px 0 6px"></div>
+<div class="meta" id="dareLine" style="color:#93a3b8;font-size:12px"></div>
+<div class="meta" id="meta" style="color:#93a3b8;font-size:12px"></div>
 </div>
 </div>
 
@@ -110,7 +169,7 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 </div>
 </template>
 
-<!-- Penultimate modal template (injected ONLY for penultimate tapper) -->
+<!-- Penultimate modal template (only injected for the penultimate tapper) -->
 <template id="penultTpl">
 <div class="modal" id="penultModal" role="dialog" aria-modal="true">
 <div class="sheet">
@@ -138,6 +197,7 @@ function uuid(){ try{ return crypto.randomUUID() } catch(e){ return Math.random(
 /* Elements */
 const hostMount=$("hostMount"), tableWrap=$("tableWrap"), board=$("board");
 const revealView=$("revealView"), resetBtn=$("resetBtn");
+const logo=$("logo");
 
 /* State */
 let gameId = qs.get("g") || null;
@@ -149,7 +209,7 @@ myName: null,
 tappedOnce: false,
 inviteShared: false,
 clientId: (()=>{ try{ let v=localStorage.getItem("td_client"); if(!v){ v=uuid(); localStorage.setItem("td_client", v); } return v; }catch(_){ return uuid(); } })(),
-penultShown: false // blocks accidental double-modal
+penultShown: false
 };
 
 /* Mount views */
@@ -201,9 +261,9 @@ const s = await res.json();
 if(!res.ok){ say(s.error||"Connection error"); return; }
 state=s;
 if(state.revealed){ showReveal(); return; }
+// Turn the header logo green once any thumb is down
+if ((state.tapped||[]).length > 0) logo.classList.add("active");
 drawTable(state.names, state.tapped);
-
-// If not penultimate on THIS device, ensure any modal is removed
 ensureNoPenultModalUnlessEligible();
 }
 
@@ -218,38 +278,69 @@ const chip=document.createElement("div");
 chip.className="chip"+(down?" down":"");
 chip.style.left=pts[i].x+"%"; chip.style.top=pts[i].y+"%";
 chip.dataset.name=nm;
-chip.innerHTML=`<div class="ic">${down?"👎":"👍"}</div><div class="nm">${nm}</div>`;
-chip.addEventListener("click",()=>onTap(nm,chip),{passive:true});
+
+// SVG icon (crisp on all screens)
+chip.innerHTML=`<div class="ic">${thumbSvg()}</div><div class="nm">${nm}</div>`;
+
+chip.addEventListener("click",()=>onChipClick(nm,chip),{passive:true});
 board.appendChild(chip);
 });
 
-// If this device already tapped, disable others locally
+// Local lock: after you’ve tapped, mark others disabled (but keep pointer so we can wobble)
 if(me.tappedOnce && me.myName){
-[...board.querySelectorAll(".chip")].forEach(c=>{ if(c.dataset.name!==me.myName) c.classList.add("disabled"); });
+[...board.querySelectorAll(".chip")].forEach(c=>{
+if(c.dataset.name!==me.myName) c.classList.add("disabled");
+});
 }
+}
+
+function thumbSvg(){
+return `<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M10.5 3c.7 0 1.3.4 1.6 1l2.3 4.5h4.1c1.7 0 3 1.3 3 3 0 .5-.1 1-.4 1.4l-4.8 7.6c-.4.7-1.2 1.1-2 .9-.8-.1-1.4-.8-1.5-1.6l-.4-3.8H9c-1.7 0-3-1.3-3-3v-8c0-1.1.9-2 2-2h2.5Zm-7.5 2h3v10h-3V5Z"/>
+</svg>`;
+}
+
+/* Tap / click handling with wobble for invalid attempts */
+async function onChipClick(name, chip){
+// If you already tapped a different name, just wobble the attempted chip
+if (me.tappedOnce && me.myName && me.myName !== name){
+wobble(chip);
+return;
+}
+// If this chip is already down (by anyone), wobble it
+if (chip.classList.contains("down")){
+wobble(chip);
+return;
+}
+onTap(name, chip);
+}
+
+function wobble(el){
+el.classList.remove("wobble");
+// force reflow to restart animation
+void el.offsetWidth;
+el.classList.add("wobble");
 }
 
 /* Tap flow */
 async function onTap(name,chip){
 if(!gameId||!state) return;
 if(state.revealed) return;
-if(state.tapped.includes(name)) return;
-if(me.tappedOnce && me.myName && me.myName!==name) return;
 
-// Optimistic
+// Optimistic: rotate exactly 180° and keep down, color green
 chip.classList.add("down");
-chip.querySelector(".ic").textContent="👎";
+// lock locally
 me.tappedOnce=true; me.myName=name;
 
 // Host: first tap → WhatsApp invite with explicit ?g=
 if(me.isHost && !me.inviteShared && gameId){
 me.inviteShared=true;
 const inviteURL = location.origin + location.pathname + "?g=" + encodeURIComponent(gameId);
-const text = `Thumbs Down — Don’t Be Such a Loser\n${inviteURL}`;
+const text = `Thumbs Down — Tap or be tasked.\n${inviteURL}`;
 setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(text); }, 900);
 }
 
-// Send to server with clientId
+// Send to server with clientId (server enforces one-thumb-per-device)
 const res = await fetch("/api/tap",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
@@ -259,14 +350,16 @@ const s = await res.json();
 if(!res.ok){ say(s.error||"Tap failed"); await fetchState(); return; }
 state=s;
 
-// Use authoritative response to decide penultimate status
+// Turn header logo green once any thumb is down
+if ((state.tapped||[]).length > 0) logo.classList.add("active");
+
+// Penultimate check (authoritative)
 maybeShowPenultimate();
 drawTable(state.names, state.tapped);
 }
 
 /* Penultimate gating */
 function maybeShowPenultimate(){
-// Only if exactly one name remains AND this device is in tapped
 const remaining = state.names.length - state.tapped.length;
 const iAmTapped = me.myName && state.tapped.includes(me.myName);
 if (remaining === 1 && iAmTapped && !me.penultShown) {
@@ -274,27 +367,21 @@ const loser = state.names.find(n => !state.tapped.includes(n)) || "someone";
 openPenultModal(loser);
 me.penultShown = true;
 } else if (!(remaining === 1 && iAmTapped)) {
-// If condition no longer true, ensure modal gone
 closePenultModal();
 me.penultShown = false;
 }
 }
-
 function ensureNoPenultModalUnlessEligible(){
 const remaining = state.names.length - state.tapped.length;
 const iAmTapped = me.myName && state.tapped.includes(me.myName);
-if (!(remaining === 1 && iAmTapped)) {
-closePenultModal();
-me.penultShown = false;
-}
+if (!(remaining === 1 && iAmTapped)) { closePenultModal(); me.penultShown=false; }
 }
 
 /* Modal mount/unmount */
 function openPenultModal(loserName){
-closePenultModal(); // just in case
+closePenultModal();
 const tpl = document.getElementById("penultTpl").content.cloneNode(true);
 document.body.appendChild(tpl);
-const modal = document.getElementById("penultModal");
 document.getElementById("loserName").textContent = loserName;
 
 document.getElementById("confirmDare").onclick = async ()=>{
@@ -317,11 +404,7 @@ location.href = "https://wa.me/?text="+encodeURIComponent(text);
 showReveal();
 closePenultModal();
 };
-
-// Prevent backdrop click from closing (we want them to finish)
-modal.addEventListener("click", (e)=>{ if(e.target===modal){ /* do nothing */ } }, {passive:true});
 }
-
 function closePenultModal(){
 const m = document.getElementById("penultModal");
 if (m) m.remove();
@@ -337,7 +420,7 @@ $("dareLine").textContent = state.dare ? `Your dare is: ${state.dare}` : "";
 $("meta").textContent = new Date().toLocaleString();
 }
 
-/* Toast errors */
+/* Error toast */
 window.addEventListener('error',e=>{ try{ say('Error: '+(e.message||'unknown')); }catch(_){} });
 </script>
 </body>
