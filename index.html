@@ -42,13 +42,14 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 .chip.disabled{opacity:.55; cursor:not-allowed; pointer-events:none}
 
 .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#0d1326;border:1px solid rgba(255,255,255,.12);padding:10px 14px;border-radius:12px;font-weight:900;z-index:50}
-.penult{margin-top:10px;display:grid;grid-template-columns:1fr auto;gap:8px}
-.penult input{background:#0d1326;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#e6e9ef;padding:12px}
-.reveal{display:grid;place-items:center;text-align:center;padding:10px}
-.headline{font-size:22px;font-weight:900;margin:4px 0 6px}
-.meta{color:#93a3b8;font-size:12px}
-.msg{font-size:13px;color:#e6e9ef;margin:6px 0}
-.em{font-style:italic}
+
+/* Modal */
+.modal{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);z-index:60}
+.sheet{width:min(92%,560px);background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:grid;gap:10px}
+.h{font-weight:900;font-size:18px}
+.p{color:var(--muted);font-size:13px}
+.row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.row input{background:#0d1326;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#e6e9ef;padding:12px}
 </style>
 </head>
 <body>
@@ -60,7 +61,7 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 <button id="resetBtn" class="btn btn-ghost hidden">Reset</button>
 </div>
 
-<!-- Final reveal view -->
+<!-- Reveal view -->
 <div id="revealView" class="hidden">
 <div class="reveal">
 <div class="headline" id="headline"></div>
@@ -69,8 +70,9 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 </div>
 </div>
 
+<!-- App view -->
 <div id="appView">
-<!-- Host setup injected from template only for host -->
+<!-- Host UI mounts here (template below), players never get it -->
 <div id="hostMount"></div>
 
 <!-- Table -->
@@ -80,20 +82,13 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 <div id="board" class="board"></div>
 </div>
 </div>
-
-<!-- Penultimate-only area (hidden for everyone else) -->
-<div id="penultBox" class="penult hidden" aria-hidden="true">
-<div id="penultMsg" class="msg"></div> <!-- UPDATED: dynamic message -->
-<input id="dareInput" maxlength="50" placeholder="Today’s dare (≤50 chars)" />
-<button id="confirmDare" class="btn btn-primary" type="button">Reveal the loser to the group</button>
-</div>
 </div>
 
 <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 </div>
 </div>
 
-<!-- Host UI template -->
+<!-- Host UI template (only injected with no ?g=) -->
 <template id="hostTpl">
 <div id="hostSetup" class="setup">
 <div class="hint">Add up to 10 names, then tap Confirm.</div>
@@ -115,8 +110,23 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 </div>
 </template>
 
+<!-- Penultimate modal template (injected ONLY for penultimate tapper) -->
+<template id="penultTpl">
+<div class="modal" id="penultModal" role="dialog" aria-modal="true">
+<div class="sheet">
+<div class="h">Congratulations, you are the last of the winners.</div>
+<div class="p">Now set a DARE for <strong id="loserName"></strong>.</div>
+<div class="row">
+<input id="dareInput" maxlength="50" placeholder="Today’s dare (≤50 chars)" />
+<button id="confirmDare" class="btn btn-primary" type="button">Break the news</button>
+</div>
+</div>
+</div>
+</template>
+
 <script>
 "use strict";
+
 /* Helpers */
 const $=id=>document.getElementById(id);
 const qs=new URLSearchParams(location.search);
@@ -127,7 +137,6 @@ function uuid(){ try{ return crypto.randomUUID() } catch(e){ return Math.random(
 
 /* Elements */
 const hostMount=$("hostMount"), tableWrap=$("tableWrap"), board=$("board");
-const penultBox=$("penultBox"), penultMsg=$("penultMsg"), dareInput=$("dareInput"), confirmDare=$("confirmDare");
 const revealView=$("revealView"), resetBtn=$("resetBtn");
 
 /* State */
@@ -139,14 +148,15 @@ isHost: !gameId,
 myName: null,
 tappedOnce: false,
 inviteShared: false,
-clientId: (()=>{ try{ let v=localStorage.getItem("td_client"); if(!v){ v=uuid(); localStorage.setItem("td_client", v); } return v; }catch(_){ return uuid(); } })()
+clientId: (()=>{ try{ let v=localStorage.getItem("td_client"); if(!v){ v=uuid(); localStorage.setItem("td_client", v); } return v; }catch(_){ return uuid(); } })(),
+penultShown: false // blocks accidental double-modal
 };
 
 /* Mount views */
 if (me.isHost) {
-// Inject host UI
-const tpl=document.getElementById("hostTpl");
-hostMount.appendChild(tpl.content.cloneNode(true));
+// Inject host UI only for true host (no ?g=)
+const tpl=document.getElementById("hostTpl").content.cloneNode(true);
+hostMount.appendChild(tpl);
 const hostSetup=$("hostSetup");
 const nameFields=$("nameFields");
 const confirmBtn=$("confirmBtn");
@@ -166,11 +176,8 @@ const data = await res.json();
 if (!res.ok){ say(data.error || "Create failed"); return; }
 gameId = data.gameId; state = data.state;
 
-// Switch URL to player link; remove host UI
 history.replaceState(null,"",location.pathname+"?g="+gameId);
-hostMount.innerHTML="";
-resetBtn.classList.add("hidden");
-
+hostMount.innerHTML=""; resetBtn.classList.add("hidden");
 tableWrap.classList.remove("hidden");
 drawTable(state.names, state.tapped);
 startPolling();
@@ -191,10 +198,13 @@ async function fetchState(){
 if(!gameId) return;
 const res = await fetch("/api/state?gameId="+encodeURIComponent(gameId));
 const s = await res.json();
-if(!res.ok){ say(s.error || "Connection error"); return; }
+if(!res.ok){ say(s.error||"Connection error"); return; }
 state=s;
 if(state.revealed){ showReveal(); return; }
 drawTable(state.names, state.tapped);
+
+// If not penultimate on THIS device, ensure any modal is removed
+ensureNoPenultModalUnlessEligible();
 }
 
 /* Render */
@@ -213,11 +223,7 @@ chip.addEventListener("click",()=>onTap(nm,chip),{passive:true});
 board.appendChild(chip);
 });
 
-// Hide dare UI by default; only penultimate device will show it
-penultBox.classList.add("hidden");
-penultBox.setAttribute("aria-hidden","true");
-
-// Local one-tap lockout
+// If this device already tapped, disable others locally
 if(me.tappedOnce && me.myName){
 [...board.querySelectorAll(".chip")].forEach(c=>{ if(c.dataset.name!==me.myName) c.classList.add("disabled"); });
 }
@@ -230,7 +236,7 @@ if(state.revealed) return;
 if(state.tapped.includes(name)) return;
 if(me.tappedOnce && me.myName && me.myName!==name) return;
 
-// Optimistic flip
+// Optimistic
 chip.classList.add("down");
 chip.querySelector(".ic").textContent="👎";
 me.tappedOnce=true; me.myName=name;
@@ -243,62 +249,96 @@ const text = `Thumbs Down — Don’t Be Such a Loser\n${inviteURL}`;
 setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(text); }, 900);
 }
 
-// Send to server with clientId for server-side one-tap enforcement
+// Send to server with clientId
 const res = await fetch("/api/tap",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({gameId, name, clientId: me.clientId})
 });
 const s = await res.json();
-if(!res.ok){ say(s.error || "Tap failed"); await fetchState(); return; }
+if(!res.ok){ say(s.error||"Tap failed"); await fetchState(); return; }
 state=s;
 
-const remaining = state.names.length - state.tapped.length;
-
-// If THIS device is now the penultimate, show the DARE UI with the exact wording
-if(remaining===1 && state.tapped.includes(me.myName)){
-const loser = state.names.find(n => !state.tapped.includes(n)) || "someone";
-penultMsg.innerHTML = `<strong>Congratulations, you are the final winner.</strong> <span class="em">Now set the DARE for ${loser}.</span>`;
-penultBox.classList.remove("hidden");
-penultBox.setAttribute("aria-hidden","false");
-} else {
-penultBox.classList.add("hidden");
-penultBox.setAttribute("aria-hidden","true");
-}
-
+// Use authoritative response to decide penultimate status
+maybeShowPenultimate();
 drawTable(state.names, state.tapped);
 }
 
-/* Reveal (penultimate only) */
+/* Penultimate gating */
+function maybeShowPenultimate(){
+// Only if exactly one name remains AND this device is in tapped
+const remaining = state.names.length - state.tapped.length;
+const iAmTapped = me.myName && state.tapped.includes(me.myName);
+if (remaining === 1 && iAmTapped && !me.penultShown) {
+const loser = state.names.find(n => !state.tapped.includes(n)) || "someone";
+openPenultModal(loser);
+me.penultShown = true;
+} else if (!(remaining === 1 && iAmTapped)) {
+// If condition no longer true, ensure modal gone
+closePenultModal();
+me.penultShown = false;
+}
+}
+
+function ensureNoPenultModalUnlessEligible(){
+const remaining = state.names.length - state.tapped.length;
+const iAmTapped = me.myName && state.tapped.includes(me.myName);
+if (!(remaining === 1 && iAmTapped)) {
+closePenultModal();
+me.penultShown = false;
+}
+}
+
+/* Modal mount/unmount */
+function openPenultModal(loserName){
+closePenultModal(); // just in case
+const tpl = document.getElementById("penultTpl").content.cloneNode(true);
+document.body.appendChild(tpl);
+const modal = document.getElementById("penultModal");
+document.getElementById("loserName").textContent = loserName;
+
 document.getElementById("confirmDare").onclick = async ()=>{
-if(!gameId||!state) return;
-const dv=(dareInput.value||"").trim().slice(0,50);
+const dareInput = document.getElementById("dareInput");
+const dv = (dareInput.value||"").trim().slice(0,50);
 if(!dv){ say("Type a dare first"); return; }
 
 const res = await fetch("/api/reveal",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
+method:"POST", headers:{"Content-Type":"application/json"},
 body:JSON.stringify({gameId, dare: dv})
 });
 const s = await res.json();
-if(!res.ok){ say(s.error || "Reveal failed"); return; }
-state=s;
+if(!res.ok){ say(s.error||"Reveal failed"); return; }
+state = s;
 
 const revealURL = location.origin + location.pathname + "?g=" + encodeURIComponent(gameId);
 const text = `👉 Click to reveal today’s massive loser:\n${revealURL}`;
 location.href = "https://wa.me/?text="+encodeURIComponent(text);
 
 showReveal();
+closePenultModal();
 };
 
+// Prevent backdrop click from closing (we want them to finish)
+modal.addEventListener("click", (e)=>{ if(e.target===modal){ /* do nothing */ } }, {passive:true});
+}
+
+function closePenultModal(){
+const m = document.getElementById("penultModal");
+if (m) m.remove();
+}
+
+/* Reveal */
 function showReveal(){
 stopPolling();
-document.getElementById("appView").classList.add("hidden");
+$("appView").classList.add("hidden");
 revealView.classList.remove("hidden");
-document.getElementById("headline").textContent = `Today’s massive loser: ${state.loser||"Someone"}`;
-document.getElementById("dareLine").textContent = state.dare ? `Your dare is: ${state.dare}` : "";
-document.getElementById("meta").textContent = new Date().toLocaleString();
+$("headline").textContent = `Today’s massive loser: ${state.loser||"Someone"}`;
+$("dareLine").textContent = state.dare ? `Your dare is: ${state.dare}` : "";
+$("meta").textContent = new Date().toLocaleString();
 }
+
+/* Toast errors */
+window.addEventListener('error',e=>{ try{ say('Error: '+(e.message||'unknown')); }catch(_){} });
 </script>
 </body>
 </html>
