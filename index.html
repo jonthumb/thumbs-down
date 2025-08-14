@@ -4,98 +4,125 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Thumbs Down</title>
-<meta name="theme-color" content="#0b1220">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0B0B0C">
 <style>
 :root{
---bg:#0b1220; --card:#0f172a; --fg:#e6e9ef; --muted:#93a3b8;
---accent:#22c55e; /* green */
---accent-soft:rgba(34,197,94,.16);
---chip:#0d1326; --chip-b:#101a33; --shadow:0 14px 40px rgba(0,0,0,.35)
+/* THEME — beige / black / green */
+--beige:#F3EADD; /* page background */
+--black:#0B0B0C; /* cards */
+--black-2:#121316; /* darker accents */
+--fg:#ECECEC; /* text on black */
+--muted:#C0C6CD; /* subtle text */
+--green:#20C977; /* accent */
+--green-soft:rgba(32,201,119,.16);
+--grey:#C9CFD8; /* default thumb */
+--chip:#121316; /* chip bg */
+--chip-b:#1C1F26;
+--shadow:0 18px 50px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
-font:16px/1.35 Manrope,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
-
-.wrap{min-height:100%;display:grid;place-items:center;padding:14px}
-.card{width:min(100%,740px);background:var(--card);border:1px solid rgba(255,255,255,.06);
-border-radius:20px;box-shadow:var(--shadow);padding:16px 16px 24px}
-
-/* Header / Wordmark */
-.head{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
-.brand{display:flex;gap:12px;align-items:center}
-.logoBox{
-width:60px;height:60px;border-radius:16px;
-background:radial-gradient(60% 80% at 50% 35%, rgba(255,255,255,.06), transparent 60%), linear-gradient(180deg,#0f172a,#0b1220);
-display:grid;place-items:center;border:1px solid rgba(255,255,255,.06);box-shadow:0 10px 22px rgba(0,0,0,.35)
+html,body{margin:0;height:100%}
+body{
+background:var(--beige);
+color:var(--fg);
+font:16px/1.35 Manrope,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 }
-.logoBox svg{width:30px;height:30px;display:block}
+
+.wrap{min-height:100%;display:grid;place-items:center;padding:18px}
+.card{
+width:min(100%,760px);
+background:var(--black);
+border:1px solid rgba(255,255,255,.06);
+border-radius:22px;
+box-shadow:var(--shadow);
+padding:18px 18px 26px;
+}
+
+/* Header */
+.head{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.brand{display:flex;gap:14px;align-items:center}
+.logoBox{
+width:68px;height:68px;border-radius:18px;background:var(--black-2);
+display:grid;place-items:center;border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 22px rgba(0,0,0,.4)
+}
+.logoBox svg{width:36px;height:36px;display:block;transition:transform .30s ease, fill .25s ease}
+.logoBox.up svg{transform:rotate(0deg)}
+.logoBox.down svg{transform:rotate(180deg)}
+.logoBox .thumbFill{fill:var(--grey)}
+.logoBox.down .thumbFill{fill:var(--green)}
+
 .wordmark{line-height:1}
-.title{margin:0;font-size:26px;font-weight:900;letter-spacing:.3px}
-.tag{margin:2px 0 0;color:#e6e9ef;opacity:.9;font-family:Pacifico,cursive;font-size:16px;letter-spacing:.2px}
+.title{margin:0;font-size:28px;font-weight:900;color:#F7F8F9;letter-spacing:.2px}
+.tag{margin:4px 0 0;color:#EDEDED;opacity:.98;font-family:Pacifico,cursive;font-size:18px;letter-spacing:.2px}
+
 .btn{border:0;border-radius:12px;padding:12px 14px;font:inherit;font-weight:900;cursor:pointer}
-.btn-primary{background:#0ea5e9;color:#fff;box-shadow:0 10px 22px rgba(14,165,233,.25)}
-.btn-ghost{background:#0d1326;color:#e6e9ef;border:1px solid rgba(255,255,255,.12)}
+.btn-primary{background:#0EA5E9;color:#fff;box-shadow:0 10px 22px rgba(14,165,233,.25)}
+.btn-ghost{background:#121316;color:#e6e9ef;border:1px solid rgba(255,255,255,.12)}
 .hidden{display:none}
 
 /* Host setup */
-.setup{margin:14px 2px 10px;display:grid;gap:10px}
-.hint{color:var(--muted);font-size:12px;margin-top:-2px}
+.setup{margin:16px 2px 12px;display:grid;gap:10px}
+.hint{color:#C9CECF;font-size:12px;margin-top:-2px}
 .grid-names{display:grid;gap:8px;grid-template-columns:1fr 1fr}
-@media (min-width:480px){ .grid-names{grid-template-columns:1fr 1fr 1fr} }
-.namebox{background:#0d1326;border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:10px}
-.namebox input{width:100%;border:0;background:transparent;color:var(--fg);font:700 16px/1.2 Manrope;outline:none;padding:2px 0}
+@media (min-width:520px){ .grid-names{grid-template-columns:1fr 1fr 1fr} }
+.namebox{background:#121316;border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:10px}
+.namebox input{width:100%;border:0;background:transparent;color:#F2F5F6;font:800 16px/1.2 Manrope;outline:none;padding:2px 0}
 
-.header-gap{height:18px}
+.header-gap{height:20px}
 
 /* Table */
 .table-wrap{display:grid;place-items:center}
 .table{
-width:min(100%,720px);aspect-ratio:16/10;position:relative;border-radius:24px;
+width:min(100%,740px);aspect-ratio:16/10;position:relative;border-radius:26px;
 background:
-radial-gradient(80% 90% at 50% 40%, rgba(255,255,255,.06), transparent 65%),
-linear-gradient(180deg,#0f172a,#0b1220);
-outline:1px solid rgba(255,255,255,.08);
-box-shadow: inset 0 10px 22px rgba(255,255,255,.04), inset 0 -8px 20px rgba(0,0,0,.35), var(--shadow)
+radial-gradient(70% 100% at 50% 30%, rgba(255,255,255,.06), transparent 60%),
+linear-gradient(180deg,#13151B,#0D0E12);
+border:1px solid rgba(255,255,255,.08);
+box-shadow:inset 0 10px 24px rgba(255,255,255,.03), inset 0 -10px 22px rgba(0,0,0,.45), var(--shadow)
 }
 .edge{
-position:absolute;inset:7% 5.5%;border-radius:999px;border:2px solid rgba(255,255,255,.12);
-box-shadow: inset 0 0 0 6px rgba(255,255,255,.03);pointer-events:none
+position:absolute;inset:7% 5%;border-radius:999px;border:2px solid rgba(255,255,255,.12);
+box-shadow:inset 0 0 0 6px rgba(255,255,255,.03);pointer-events:none
 }
 .board{position:absolute;inset:0}
 
 /* Chips */
 .chip{
 position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;gap:4px;
-width:62px;height:62px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-b);
-box-shadow:0 10px 20px rgba(0,0,0,.35);cursor:pointer;user-select:none;touch-action:manipulation;
+width:66px;height:66px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-b);
+box-shadow:0 12px 24px rgba(0,0,0,.45);cursor:pointer;user-select:none;touch-action:manipulation;
 transition:transform .18s ease
 }
 .chip:active{ transform:translate(-50%,-50%) scale(.97) }
-.ic{display:grid;place-items:center}
-.nm{font-weight:900;font-size:10px;text-align:center;color:#e6e9ef;padding:0 6px;max-width:56px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-/* Thumb SVG states */
-.thumb svg{width:22px;height:22px;display:block;transition:transform .28s ease, filter .2s ease}
-.thumb.up svg{ transform:rotate(0deg); filter:grayscale(1) brightness(.9) }
-.thumb.down svg{ transform:rotate(180deg); filter:none }
-.chip.down{ background:var(--accent-soft); border-color:rgba(34,197,94,.45) }
-.chip.down .thumb svg{ filter:none }
-
+.nm{
+font-weight:900;font-size:10px;text-align:center;color:#E6EBEF;padding:0 6px;max-width:58px;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
 .chip.disabled{opacity:.55;cursor:not-allowed}
+
+/* Thumb artwork + animation */
+.thumb svg{width:24px;height:24px;display:block;transition:transform .28s ease}
+.thumb .thumbFill{fill:var(--grey)}
+.thumb.up svg{ transform:rotate(0deg) }
+.thumb.down svg{ transform:rotate(180deg) }
+.chip.down .thumb .thumbFill{ fill:var(--green) }
+.chip.down{ background:var(--green-soft); border-color:rgba(32,201,119,.45) }
+
+/* Wobble for invalid taps */
 @keyframes wobble{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 6px),-50%)}75%{transform:translate(calc(-50% + 6px),-50%)}}
-.chip.wobble{animation:wobble .28s ease}
+.chip.wobble{ animation:wobble .28s ease }
 
 /* Toast */
-.toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#0d1326;border:1px solid rgba(255,255,255,.12);padding:10px 14px;border-radius:12px;font-weight:900;z-index:50}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#121316;border:1px solid rgba(255,255,255,.12);padding:10px 14px;border-radius:12px;font-weight:900;z-index:50}
 
 /* Modal */
 .modal{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);z-index:60}
-.sheet{width:min(92%,560px);background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:grid;gap:10px}
+.sheet{width:min(92%,560px);background:var(--black);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:grid;gap:10px}
 .h{font-weight:900;font-size:18px}
-.p{color:var(--muted);font-size:13px}
+.p{color:#C9CECF;font-size:13px}
 .row{display:grid;grid-template-columns:1fr auto;gap:8px}
-.row input{background:#0d1326;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#e6e9ef;padding:12px}
+.row input{background:#121316;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#E6E9EF;padding:12px}
 </style>
 </head>
 <body>
@@ -104,13 +131,11 @@ transition:transform .18s ease
 <!-- HEADER -->
 <div class="head">
 <div class="brand">
-<div id="logoBox" class="logoBox" aria-hidden="true">
-<!-- LOGO: grey up by default; turns green when any tap happens -->
-<svg viewBox="0 0 24 24" id="logoThumb">
-<!-- outline -->
-<path fill="#e6e9ef" opacity=".25" d="M3 5h3v10H3z"/>
-<!-- thumb path -->
-<path id="logoThumbPath" d="M10.5 3c.7 0 1.3.4 1.6 1l2.3 4.5h4.1c1.7 0 3 1.3 3 3 0 .5-.1 1-.4 1.4l-4.8 7.6c-.4.7-1.2 1.1-2 .9-.8-.1-1.4-.8-1.5-1.6l-.4-3.8H9c-1.7 0-3-1.3-3-3v-8c0-1.1.9-2 2-2h2.5Z" fill="#cbd5e1"/>
+<div id="logoBox" class="logoBox up" aria-hidden="true">
+<!-- LOGO uses the exact same glyph as chips -->
+<svg viewBox="0 0 64 64" aria-hidden="true">
+<path class="thumbFill" d="M24 10c2 0 3.9 1.1 4.9 2.9l7.3 13.5H49c4.8 0 8.6 3.9 8.6 8.6c0 1.5-.4 3-1.1 4.2l-14 22.6c-1.2 1.9-3.5 2.9-5.7 2.4c-2.1-.4-3.7-2.1-4-4.2l-1.2-11H22.7C17.9 49 14 45.1 14 40.3V16.6C14 12.9 17 10 20.7 10H24Z"/>
+<rect x="8" y="16" width="8" height="28" rx="2" ry="2" fill="rgba(255,255,255,.25)"/>
 </svg>
 </div>
 <div class="wordmark">
@@ -125,17 +150,16 @@ transition:transform .18s ease
 
 <!-- REVEAL -->
 <div id="revealView" class="hidden">
-<div class="reveal" style="text-align:center">
-<div class="headline" id="headline" style="font-size:22px;font-weight:900;margin:4px 0 6px"></div>
-<div class="meta" id="dareLine" style="color:#93a3b8;font-size:12px"></div>
-<div class="meta" id="meta" style="color:#93a3b8;font-size:12px"></div>
+<div style="text-align:center">
+<div id="headline" style="font-size:22px;font-weight:900;margin:4px 0 6px"></div>
+<div id="dareLine" style="color:#C9CECF;font-size:12px"></div>
+<div id="meta" style="color:#C9CECF;font-size:12px"></div>
 </div>
 </div>
 
 <!-- APP -->
 <div id="appView">
 <div id="hostMount"></div>
-
 <div class="table-wrap hidden" id="tableWrap">
 <div class="table">
 <div class="edge"></div>
@@ -148,7 +172,7 @@ transition:transform .18s ease
 </div>
 </div>
 
-<!-- HOST TEMPLATE -->
+<!-- HOST TEMPLATE (injected only when there is no ?g=) -->
 <template id="hostTpl">
 <div id="hostSetup" class="setup">
 <div class="hint">Add up to 10 names, then tap Confirm.</div>
@@ -164,13 +188,13 @@ transition:transform .18s ease
 <div class="namebox"><input placeholder="Name 9"></div>
 <div class="namebox"><input placeholder="Name 10"></div>
 </div>
-<div class="toolbar">
+<div class="row">
 <button id="confirmBtn" class="btn btn-primary" type="button" disabled>Confirm</button>
 </div>
 </div>
 </template>
 
-<!-- PENULTIMATE MODAL -->
+<!-- PENULTIMATE MODAL (only injected for the penultimate tapper) -->
 <template id="penultTpl">
 <div class="modal" id="penultModal" role="dialog" aria-modal="true">
 <div class="sheet">
@@ -198,7 +222,7 @@ function uuid(){ try{ return crypto.randomUUID() } catch(e){ return Math.random(
 /* Elements */
 const hostMount=$("hostMount"), tableWrap=$("tableWrap"), board=$("board");
 const revealView=$("revealView"), resetBtn=$("resetBtn");
-const logoThumbPath=$("logoThumbPath");
+const logoBox=$("logoBox"); // to flip + recolor header thumb
 
 /* State */
 let gameId = qs.get("g") || null;
@@ -231,12 +255,14 @@ const names=getNames(); if(names.length<3){ say("Add at least 3 names"); return;
 const res=await fetch("/api/game",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({names})});
 const data=await res.json(); if(!res.ok){ say(data.error||"Create failed"); return; }
 gameId=data.gameId; state=data.state;
+
 history.replaceState(null,"",location.pathname+"?g="+gameId);
 hostMount.innerHTML=""; resetBtn.classList.add("hidden");
 tableWrap.classList.remove("hidden");
 drawTable(state.names,state.tapped); startPolling();
 say("Names confirmed. Tap your own name to share the invite.");
 };
+
 resetBtn.onclick=()=>{ location.href=location.pathname+"?ts="+Date.now(); };
 } else {
 tableWrap.classList.remove("hidden");
@@ -254,9 +280,17 @@ const s=await res.json();
 if(!res.ok){ say(s.error||"Connection error"); return; }
 state=s;
 if(state.revealed){ showReveal(); return; }
-if((state.tapped||[]).length>0){ logoThumbPath.setAttribute("fill","var(--accent)"); }
+if((state.tapped||[]).length>0){ logoBox.classList.remove("up"); logoBox.classList.add("down"); }
 drawTable(state.names,state.tapped);
 ensureNoPenultModalUnlessEligible();
+}
+
+/* The single thumb glyph (same for logo and chips) */
+function thumbGlyphSVG(fillVar, rotateDeg){
+return `<svg viewBox="0 0 64 64" aria-hidden="true" style="transform:rotate(${rotateDeg}deg)">
+<path class="thumbFill" fill="${fillVar}" d="M24 10c2 0 3.9 1.1 4.9 2.9l7.3 13.5H49c4.8 0 8.6 3.9 8.6 8.6c0 1.5-.4 3-1.1 4.2l-14 22.6c-1.2 1.9-3.5 2.9-5.7 2.4c-2.1-.4-3.7-2.1-4-4.2l-1.2-11H22.7C17.9 49 14 45.1 14 40.3V16.6C14 12.9 17 10 20.7 10H24Z"/>
+<rect x="8" y="16" width="8" height="28" rx="2" ry="2" fill="rgba(255,255,255,.25)"/>
+</svg>`;
 }
 
 /* Table rendering */
@@ -269,25 +303,21 @@ const chip=document.createElement("div");
 chip.className="chip"+(down?" down":"");
 chip.style.left=pts[i].x+"%"; chip.style.top=pts[i].y+"%";
 chip.dataset.name=nm;
-chip.innerHTML=`
-<div class="ic thumb ${down?'down':'up'}">${thumbSVG(down)}</div>
+
+const rot = down?180:0;
+const fill = down?"var(--green)":"var(--grey)";
+chip.innerHTML = `
+<div class="thumb ${down?'down':'up'}">${thumbGlyphSVG(fill, rot)}</div>
 <div class="nm">${nm}</div>`;
+
 chip.addEventListener("click",()=>onChipClick(nm,chip),{passive:true});
 board.appendChild(chip);
 });
+
+// Local lock: after you’ve tapped, mark others disabled (but keep pointer for wobble)
 if(me.tappedOnce && me.myName){
 [...board.querySelectorAll(".chip")].forEach(c=>{ if(c.dataset.name!==me.myName) c.classList.add("disabled"); });
 }
-}
-
-/* SVG thumb used everywhere (same shape as logo) */
-function thumbSVG(isDown){
-const fill = isDown ? "var(--accent)" : "#cbd5e1";
-const rot = isDown ? 180 : 0;
-return `<svg viewBox="0 0 24 24" style="transform:rotate(${rot}deg)">
-<path fill="#e6e9ef" opacity=".25" d="M3 5h3v10H3z"/>
-<path d="M10.5 3c.7 0 1.3.4 1.6 1l2.3 4.5h4.1c1.7 0 3 1.3 3 3 0 .5-.1 1-.4 1.4l-4.8 7.6c-.4.7-1.2 1.1-2 .9-.8-.1-1.4-.8-1.5-1.6l-.4-3.8H9c-1.7 0-3-1.3-3-3v-8c0-1.1.9-2 2-2h2.5Z" fill="${fill}"/>
-</svg>`;
 }
 
 /* Click handling with wobble for invalid attempts */
@@ -302,16 +332,17 @@ function wobble(el){ el.classList.remove("wobble"); void el.offsetWidth; el.clas
 async function onTap(name,chip){
 if(!gameId||!state) return; if(state.revealed) return;
 
-// Optimistic: mark down (rotate to 180 & green)
+// Optimistic: rotate exactly 180°, change to green, lock locally
 chip.classList.add("down");
 const thumb = chip.querySelector(".thumb");
 thumb.classList.remove("up"); thumb.classList.add("down");
-thumb.innerHTML = thumbSVG(true);
+thumb.innerHTML = thumbGlyphSVG("var(--green)", 180);
 me.tappedOnce=true; me.myName=name;
 
-// Make header thumb green on first tap
-logoThumbPath.setAttribute("fill","var(--accent)");
+// Make header logo flip/color on first tap
+logoBox.classList.remove("up"); logoBox.classList.add("down");
 
+// Host: share invite on first tap
 if(me.isHost && !me.inviteShared && gameId){
 me.inviteShared=true;
 const inviteURL=location.origin+location.pathname+"?g="+encodeURIComponent(gameId);
@@ -319,9 +350,13 @@ const text=`Thumbs Down — Tap or be tasked.\n${inviteURL}`;
 setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(text); }, 900);
 }
 
-const res=await fetch("/api/tap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,name,clientId:me.clientId})});
+// Send to server (enforces one-thumb-per-device)
+const res=await fetch("/api/tap",{
+method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({gameId,name,clientId:me.clientId})
+});
 const s=await res.json(); if(!res.ok){ say(s.error||"Tap failed"); await fetchState(); return; }
-state=s; if((state.tapped||[]).length>0){ logoThumbPath.setAttribute("fill","var(--accent)"); }
+state=s; if((state.tapped||[]).length>0){ logoBox.classList.add("down"); }
 
 maybeShowPenultimate();
 drawTable(state.names,state.tapped);
