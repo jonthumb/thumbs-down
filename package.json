@@ -1,0 +1,8 @@
+{
+"name": "thumbs-down",
+"private": true,
+"type": "module",
+"dependencies": {
+"@netlify/blobs": "^6.4.0"
+}
+}
