@@ -11,11 +11,9 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:16px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
 .wrap{min-height:100%;display:grid;place-items:center;padding:14px}
-.card{width:min(100%,740px);background:var(--card);border:1px solid rgba(255,255,255,.06);
-border-radius:18px;box-shadow:var(--shadow);padding:14px 14px 16px}
+.card{width:min(100%,740px);background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:18px;box-shadow:var(--shadow);padding:14px 14px 16px}
 .head{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin:4px 4px 8px}
-.logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#22c55e,var(--brand));
-display:grid;place-items:center;box-shadow:0 8px 18px rgba(14,165,233,.35)}
+.logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#22c55e,var(--brand));display:grid;place-items:center;box-shadow:0 8px 18px rgba(14,165,233,.35)}
 .titles{display:grid;gap:2px}
 h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 .sub{margin:0;color:var(--muted);font-weight:700;font-size:12px}
@@ -24,7 +22,6 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 .btn-ghost{background:#0d1326;color:#e6e9ef;border:1px solid rgba(255,255,255,.12)}
 .hidden{display:none}
 
-/* Name-entry (host only) */
 .setup{margin:10px 2px;display:grid;gap:10px}
 .hint{color:var(--muted);font-size:12px;margin-top:-2px}
 .grid-names{display:grid;gap:8px;grid-template-columns:1fr 1fr}
@@ -33,7 +30,6 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 .namebox input{width:100%;border:0;background:transparent;color:var(--fg);font:600 16px/1.2 system-ui;outline:none;padding:2px 0}
 .toolbar{display:flex;justify-content:space-between;gap:8px}
 
-/* Table */
 .table-wrap{display:grid;place-items:center}
 .table{width:min(100%,720px);aspect-ratio:16/10;position:relative;border-radius:18px;background:linear-gradient(180deg,#0f172a,#0b1220);outline:1px solid rgba(255,255,255,.06);box-shadow:var(--shadow)}
 .edge{position:absolute;inset:12% 8%;border-radius:999px;border:2px dashed rgba(255,255,255,.08);pointer-events:none}
@@ -51,6 +47,8 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 .reveal{display:grid;place-items:center;text-align:center;padding:10px}
 .headline{font-size:22px;font-weight:900;margin:4px 0 6px}
 .meta{color:#93a3b8;font-size:12px}
+.msg{font-size:13px;color:#e6e9ef;margin:6px 0}
+.em{font-style:italic}
 </style>
 </head>
 <body>
@@ -72,7 +70,7 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 </div>
 
 <div id="appView">
-<!-- Host setup is injected from a <template> ONLY for the host -->
+<!-- Host setup injected from template only for host -->
 <div id="hostMount"></div>
 
 <!-- Table -->
@@ -85,8 +83,9 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 
 <!-- Penultimate-only area (hidden for everyone else) -->
 <div id="penultBox" class="penult hidden" aria-hidden="true">
+<div id="penultMsg" class="msg"></div> <!-- UPDATED: dynamic message -->
 <input id="dareInput" maxlength="50" placeholder="Today’s dare (≤50 chars)" />
-<button id="confirmDare" class="btn btn-primary" type="button">Send reveal</button>
+<button id="confirmDare" class="btn btn-primary" type="button">Reveal the loser to the group</button>
 </div>
 </div>
 
@@ -94,7 +93,7 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 </div>
 </div>
 
-<!-- Host UI template (NOT rendered for players) -->
+<!-- Host UI template -->
 <template id="hostTpl">
 <div id="hostSetup" class="setup">
 <div class="hint">Add up to 10 names, then tap Confirm.</div>
@@ -118,36 +117,41 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 
 <script>
 "use strict";
-
 /* Helpers */
 const $=id=>document.getElementById(id);
 const qs=new URLSearchParams(location.search);
 const toast=$("toast");
 function say(t,ms=1600){ toast.textContent=t; toast.classList.remove("hidden"); clearTimeout(say._t); say._t=setTimeout(()=>toast.classList.add("hidden"),ms); }
 function ringPoints(N){ const L=8,R=92,T=12,B=88,cx=(L+R)/2,cy=(T+B)/2,rx=(R-L)/2,ry=(B-T)/2; const out=[]; for(let i=0;i<N;i++){const a=(2*Math.PI*i)/N-Math.PI/2; out.push({x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)})} return out; }
+function uuid(){ try{ return crypto.randomUUID() } catch(e){ return Math.random().toString(36).slice(2) } }
 
-/* Elements (some created later) */
+/* Elements */
 const hostMount=$("hostMount"), tableWrap=$("tableWrap"), board=$("board");
-const penultBox=$("penultBox"), dareInput=$("dareInput"), confirmDare=$("confirmDare");
+const penultBox=$("penultBox"), penultMsg=$("penultMsg"), dareInput=$("dareInput"), confirmDare=$("confirmDare");
 const revealView=$("revealView"), resetBtn=$("resetBtn");
 
 /* State */
 let gameId = qs.get("g") || null;
 let state = null;
 let pollTimer=null;
-let me = { isHost: !gameId, myName:null, tappedOnce:false, inviteShared:false };
+let me = {
+isHost: !gameId,
+myName: null,
+tappedOnce: false,
+inviteShared: false,
+clientId: (()=>{ try{ let v=localStorage.getItem("td_client"); if(!v){ v=uuid(); localStorage.setItem("td_client", v); } return v; }catch(_){ return uuid(); } })()
+};
 
 /* Mount views */
 if (me.isHost) {
-// Inject host UI from template (players never get this HTML)
-const tpl = document.getElementById("hostTpl");
+// Inject host UI
+const tpl=document.getElementById("hostTpl");
 hostMount.appendChild(tpl.content.cloneNode(true));
-const hostSetup = document.getElementById("hostSetup");
-const nameFields = document.getElementById("nameFields");
-const confirmBtn = document.getElementById("confirmBtn");
+const hostSetup=$("hostSetup");
+const nameFields=$("nameFields");
+const confirmBtn=$("confirmBtn");
 resetBtn.classList.remove("hidden");
 
-// Host interactions
 const inputs=[...nameFields.querySelectorAll("input")];
 const getNames=()=>inputs.map(i=>i.value.trim()).filter(Boolean).slice(0,10);
 inputs.forEach(inp=>inp.addEventListener("input",()=>{
@@ -162,9 +166,9 @@ const data = await res.json();
 if (!res.ok){ say(data.error || "Create failed"); return; }
 gameId = data.gameId; state = data.state;
 
-// Switch URL to player link; remove host UI entirely
+// Switch URL to player link; remove host UI
 history.replaceState(null,"",location.pathname+"?g="+gameId);
-hostMount.innerHTML = ""; // host UI gone for good
+hostMount.innerHTML="";
 resetBtn.classList.add("hidden");
 
 tableWrap.classList.remove("hidden");
@@ -175,7 +179,6 @@ say("Names confirmed. Tap your own name to share the invite.");
 
 resetBtn.onclick=()=>{ location.href = location.pathname + "?ts=" + Date.now(); };
 } else {
-// Player: only table
 tableWrap.classList.remove("hidden");
 fetchState();
 }
@@ -188,7 +191,7 @@ async function fetchState(){
 if(!gameId) return;
 const res = await fetch("/api/state?gameId="+encodeURIComponent(gameId));
 const s = await res.json();
-if(!res.ok){ say(s.error||"Connection error"); return; }
+if(!res.ok){ say(s.error || "Connection error"); return; }
 state=s;
 if(state.revealed){ showReveal(); return; }
 drawTable(state.names, state.tapped);
@@ -209,8 +212,12 @@ chip.innerHTML=`<div class="ic">${down?"👎":"👍"}</div><div class="nm">${nm}
 chip.addEventListener("click",()=>onTap(nm,chip),{passive:true});
 board.appendChild(chip);
 });
+
+// Hide dare UI by default; only penultimate device will show it
 penultBox.classList.add("hidden");
 penultBox.setAttribute("aria-hidden","true");
+
+// Local one-tap lockout
 if(me.tappedOnce && me.myName){
 [...board.querySelectorAll(".chip")].forEach(c=>{ if(c.dataset.name!==me.myName) c.classList.add("disabled"); });
 }
@@ -223,12 +230,12 @@ if(state.revealed) return;
 if(state.tapped.includes(name)) return;
 if(me.tappedOnce && me.myName && me.myName!==name) return;
 
-// optimistic
+// Optimistic flip
 chip.classList.add("down");
 chip.querySelector(".ic").textContent="👎";
 me.tappedOnce=true; me.myName=name;
 
-// Host: share invite on first tap with explicit ?g=
+// Host: first tap → WhatsApp invite with explicit ?g=
 if(me.isHost && !me.inviteShared && gameId){
 me.inviteShared=true;
 const inviteURL = location.origin + location.pathname + "?g=" + encodeURIComponent(gameId);
@@ -236,17 +243,25 @@ const text = `Thumbs Down — Don’t Be Such a Loser\n${inviteURL}`;
 setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(text); }, 900);
 }
 
-const res = await fetch("/api/tap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,name})});
+// Send to server with clientId for server-side one-tap enforcement
+const res = await fetch("/api/tap",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({gameId, name, clientId: me.clientId})
+});
 const s = await res.json();
-if(!res.ok){ say(s.error||"Tap failed"); await fetchState(); return; }
+if(!res.ok){ say(s.error || "Tap failed"); await fetchState(); return; }
 state=s;
 
 const remaining = state.names.length - state.tapped.length;
+
+// If THIS device is now the penultimate, show the DARE UI with the exact wording
 if(remaining===1 && state.tapped.includes(me.myName)){
+const loser = state.names.find(n => !state.tapped.includes(n)) || "someone";
+penultMsg.innerHTML = `<strong>Congratulations, you are the final winner.</strong> <span class="em">Now set the DARE for ${loser}.</span>`;
 penultBox.classList.remove("hidden");
 penultBox.setAttribute("aria-hidden","false");
-say("Congratulations — you’re the last of the winners!");
-}else{
+} else {
 penultBox.classList.add("hidden");
 penultBox.setAttribute("aria-hidden","true");
 }
@@ -260,9 +275,13 @@ if(!gameId||!state) return;
 const dv=(dareInput.value||"").trim().slice(0,50);
 if(!dv){ say("Type a dare first"); return; }
 
-const res = await fetch("/api/reveal",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,dare:dv})});
+const res = await fetch("/api/reveal",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({gameId, dare: dv})
+});
 const s = await res.json();
-if(!res.ok){ say(s.error||"Reveal failed"); return; }
+if(!res.ok){ say(s.error || "Reveal failed"); return; }
 state=s;
 
 const revealURL = location.origin + location.pathname + "?g=" + encodeURIComponent(gameId);
