@@ -12,7 +12,8 @@ const gameId = crypto.randomUUID();
 const state = {
 version: 1,
 names,
-tapped: [],
+tapped: [], // names who are down
+claims: {}, // clientId -> name (one name per device)
 revealed: false,
 loser: null,
 dare: null
