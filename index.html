@@ -9,7 +9,7 @@
 :root{ --bg:#0b1220; --card:#0f172a; --fg:#e6e9ef; --muted:#93a3b8;
 --brand:#0ea5e9; --down:#22c55e; --chip:#0d1326; --chip-b:#101a33; --shadow:0 14px 40px rgba(0,0,0,.35) }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:16px/1.3 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:16px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
 .wrap{min-height:100%;display:grid;place-items:center;padding:14px}
 .card{width:min(100%,740px);background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:18px;box-shadow:var(--shadow);padding:14px 14px 16px}
 .head{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin:4px 4px 8px}
@@ -58,6 +58,7 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 <button id="resetBtn" class="btn btn-ghost hidden">Reset</button>
 </div>
 
+<!-- REVEAL VIEW -->
 <div id="revealView" class="hidden">
 <div class="reveal">
 <div class="headline" id="headline"></div>
@@ -67,7 +68,8 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 </div>
 
 <div id="appView">
-<div id="hostSetup" class="setup hidden">
+<!-- HOST-ONLY: name entry -->
+<div id="hostSetup" class="setup hidden" aria-hidden="true">
 <div class="hint">Add up to 10 names, then tap Confirm.</div>
 <div class="grid-names" id="nameFields">
 <div class="namebox"><input placeholder="Name 1"></div>
@@ -86,6 +88,7 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 </div>
 </div>
 
+<!-- TABLE -->
 <div class="table-wrap hidden" id="tableWrap">
 <div class="table">
 <div class="edge"></div>
@@ -93,132 +96,181 @@ h1{margin:0;font-size:20px;font-weight:900;letter-spacing:.2px}
 </div>
 </div>
 
-<div id="penultBox" class="penult hidden">
+<!-- Penultimate-only area (hidden for everyone else) -->
+<div id="penultBox" class="penult hidden" aria-hidden="true">
 <input id="dareInput" maxlength="50" placeholder="Today’s dare (≤50 chars)" />
 <button id="confirmDare" class="btn btn-primary" type="button">Send reveal</button>
 </div>
 </div>
 
-<div id="toast" class="toast hidden"></div>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 </div>
 </div>
 
 <script>
 "use strict";
+
+/* Helpers */
 const $=id=>document.getElementById(id);
 const qs=new URLSearchParams(location.search);
 const toast=$("toast");
 function say(t,ms=1600){ toast.textContent=t; toast.classList.remove("hidden"); clearTimeout(say._t); say._t=setTimeout(()=>toast.classList.add("hidden"),ms); }
 function ringPoints(N){ const L=8,R=92,T=12,B=88,cx=(L+R)/2,cy=(T+B)/2,rx=(R-L)/2,ry=(B-T)/2; const out=[]; for(let i=0;i<N;i++){const a=(2*Math.PI*i)/N-Math.PI/2; out.push({x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)})} return out; }
 
+/* Elements */
 const hostSetup=$("hostSetup"), nameFields=$("nameFields"), confirmBtn=$("confirmBtn");
 const resetBtn=$("resetBtn"), tableWrap=$("tableWrap"), board=$("board");
 const penultBox=$("penultBox"), dareInput=$("dareInput"), confirmDare=$("confirmDare");
 const revealView=$("revealView");
 
+/* State */
 let gameId = qs.get("g") || null;
 let state = null;
 let pollTimer=null;
-let me = { isHost: !gameId, myName:null, locked:false, inviteShared:false, tappedOnce:false };
+let me = { isHost: !gameId, myName:null, tappedOnce:false, inviteShared:false };
 
-if (!gameId) { hostSetup.classList.remove("hidden"); resetBtn.classList.remove("hidden"); }
-else { tableWrap.classList.remove("hidden"); fetchState(); }
+/* Gate views: players NEVER see setup */
+if (!gameId) {
+hostSetup.classList.remove("hidden");
+hostSetup.setAttribute("aria-hidden","false");
+resetBtn.classList.remove("hidden");
+} else {
+tableWrap.classList.remove("hidden");
+penultBox.classList.add("hidden");
+fetchState();
+}
 
+/* Host setup */
 if (!gameId) {
 const inputs=[...nameFields.querySelectorAll("input")];
 const getNames=()=>inputs.map(i=>i.value.trim()).filter(Boolean).slice(0,10);
-inputs.forEach(inp=>inp.addEventListener("input",()=>{ const n=getNames(); confirmBtn.disabled = n.length<3; drawTable(n, []); }, {passive:true}));
+
+inputs.forEach(inp=>inp.addEventListener("input",()=>{
+const n=getNames(); confirmBtn.disabled = n.length<3; drawTable(n, []);
+}, {passive:true}));
 
 confirmBtn.onclick=async ()=>{
-const names=[...nameFields.querySelectorAll("input")].map(i=>i.value.trim()).filter(Boolean).slice(0,10);
-if (names.length<3) { say("Add at least 3 names"); return; }
+const names=getNames();
+if (names.length<3){ say("Add at least 3 names"); return; }
+
 const res = await fetch("/api/game",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({names})});
 const data = await res.json();
 if (!res.ok){ say(data.error || "Create failed"); return; }
+
 gameId = data.gameId; state = data.state;
+
+// Switch to player-style link so nobody sees setup again
 history.replaceState(null,"",location.pathname+"?g="+gameId);
-hostSetup.classList.add("hidden"); resetBtn.classList.add("hidden");
-tableWrap.classList.remove("hidden"); drawTable(state.names, state.tapped); startPolling();
+
+hostSetup.classList.add("hidden");
+hostSetup.setAttribute("aria-hidden","true");
+resetBtn.classList.add("hidden");
+
+tableWrap.classList.remove("hidden");
+drawTable(state.names, state.tapped);
+startPolling();
+
 say("Names confirmed. Tap your own name to share the invite.");
 };
 
 resetBtn.onclick=()=>{ location.href = location.pathname + "?ts=" + Date.now(); };
 }
 
-function startPolling(){ stopPolling(); pollTimer = setInterval(fetchState, 2000); window.addEventListener("focus", fetchState); }
-function stopPolling(){ if (pollTimer){ clearInterval(pollTimer); pollTimer=null; } window.removeEventListener("focus", fetchState); }
+/* Polling */
+function startPolling(){ stopPolling(); pollTimer=setInterval(fetchState,2000); window.addEventListener("focus",fetchState); }
+function stopPolling(){ if(pollTimer){clearInterval(pollTimer);pollTimer=null;} window.removeEventListener("focus",fetchState); }
 
 async function fetchState(){
-if (!gameId) return;
+if(!gameId) return;
 const res = await fetch("/api/state?gameId="+encodeURIComponent(gameId));
 const s = await res.json();
-if (!res.ok){ say(s.error || "Connection error"); return; }
-state = s;
-if (state.revealed) { showReveal(); return; }
+if(!res.ok){ say(s.error||"Connection error"); return; }
+state=s;
+if(state.revealed){ showReveal(); return; }
 drawTable(state.names, state.tapped);
 }
 
-function drawTable(names, tapped){
-board.innerHTML = "";
-if (!Array.isArray(names) || !names.length) return;
-const pts = ringPoints(names.length);
+/* Render */
+function drawTable(names,tapped){
+board.innerHTML="";
+if(!Array.isArray(names)||!names.length) return;
+const pts=ringPoints(names.length);
 names.forEach((nm,i)=>{
-const down = tapped.includes(nm);
-const chip = document.createElement("div");
+const down=tapped.includes(nm);
+const chip=document.createElement("div");
 chip.className="chip"+(down?" down":"");
 chip.style.left=pts[i].x+"%"; chip.style.top=pts[i].y+"%";
 chip.dataset.name=nm;
 chip.innerHTML=`<div class="ic">${down?"👎":"👍"}</div><div class="nm">${nm}</div>`;
-chip.addEventListener("click",()=> onTap(nm, chip), {passive:true});
+chip.addEventListener("click",()=>onTap(nm,chip),{passive:true});
 board.appendChild(chip);
 });
-if (me.tappedOnce && me.myName){
+// Dare box is (re)hidden every draw; only shown on the penultimate device after its tap
+penultBox.classList.add("hidden");
+penultBox.setAttribute("aria-hidden","true");
+
+if(me.tappedOnce && me.myName){
 [...board.querySelectorAll(".chip")].forEach(c=>{ if(c.dataset.name!==me.myName) c.classList.add("disabled"); });
 }
 }
 
-async function onTap(name, chip){
-if (!gameId || !state) return;
-if (state.revealed) return;
-if (state.tapped.includes(name)) return;
-if (me.tappedOnce && me.myName && me.myName!==name) return;
+/* Tap flow */
+async function onTap(name,chip){
+if(!gameId||!state) return;
+if(state.revealed) return;
+if(state.tapped.includes(name)) return;
+if(me.tappedOnce && me.myName && me.myName!==name) return;
 
+// optimistic flip
 chip.classList.add("down");
 chip.querySelector(".ic").textContent="👎";
-me.tappedOnce = true; me.myName = name;
+me.tappedOnce=true; me.myName=name;
 
-if (me.isHost && !me.inviteShared){
-me.inviteShared = true;
-const invite = `Thumbs Down — Don’t Be Such a Loser\n${location.href}`;
-setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(invite); }, 900);
+// Host: first tap → WhatsApp invite with explicit ?g=
+if(me.isHost && !me.inviteShared && gameId){
+me.inviteShared=true;
+const inviteURL = location.origin + location.pathname + "?g=" + encodeURIComponent(gameId);
+const text = `Thumbs Down — Don’t Be Such a Loser\n${inviteURL}`;
+setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(text); }, 900);
 }
 
-const res = await fetch("/api/tap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId, name})});
+// send to server
+const res = await fetch("/api/tap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,name})});
 const s = await res.json();
-if (!res.ok){ say(s.error || "Tap failed"); await fetchState(); return; }
-state = s;
+if(!res.ok){ say(s.error||"Tap failed"); await fetchState(); return; }
+state=s;
 
 const remaining = state.names.length - state.tapped.length;
-if (remaining === 1 && me.myName && state.tapped.includes(me.myName)) {
+
+// Only THIS device (penultimate tapper) sees the dare
+if(remaining===1 && state.tapped.includes(me.myName)){
 penultBox.classList.remove("hidden");
+penultBox.setAttribute("aria-hidden","false");
 say("Congratulations — you’re the last of the winners!");
-} else {
+}else{
 penultBox.classList.add("hidden");
+penultBox.setAttribute("aria-hidden","true");
 }
 
 drawTable(state.names, state.tapped);
 }
 
+/* Reveal (penultimate only) */
 $("confirmDare").onclick = async ()=>{
-if (!gameId || !state) return;
-const dv = (dareInput.value||"").trim().slice(0,50);
-if (!dv) { say("Type a dare first"); return; }
-const res = await fetch("/api/reveal",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId, dare: dv})});
+if(!gameId||!state) return;
+const dv=(dareInput.value||"").trim().slice(0,50);
+if(!dv){ say("Type a dare first"); return; }
+
+const res = await fetch("/api/reveal",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,dare:dv})});
 const s = await res.json();
-if (!res.ok){ say(s.error || "Reveal failed"); return; }
-state = s; showReveal();
-const text = `👉 Click to reveal today’s massive loser:\n${location.href}`;
+if(!res.ok){ say(s.error||"Reveal failed"); return; }
+state=s;
+
+const revealURL = location.origin + location.pathname + "?g=" + encodeURIComponent(gameId);
+const text = `👉 Click to reveal today’s massive loser:\n${revealURL}`;
 location.href = "https://wa.me/?text="+encodeURIComponent(text);
+
+showReveal();
 };
 
 function showReveal(){
@@ -229,6 +281,9 @@ $("headline").textContent = `Today’s massive loser: ${state.loser||"Someone"}`
 $("dareLine").textContent = state.dare ? `Your dare is: ${state.dare}` : "";
 $("meta").textContent = new Date().toLocaleString();
 }
+
+/* Basic error trap */
+window.addEventListener('error',e=>{ try{ say('Error: '+(e.message||'unknown')); }catch(_){} });
 </script>
 </body>
 </html>
