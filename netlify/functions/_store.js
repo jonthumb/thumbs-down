@@ -1,25 +1,25 @@
-// netlify/functions/_store.js
-import { getStore } from "@netlify/blobs";
+// Simple in-memory store for game state (resets when the function cold-starts)
+let DB = {};
 
-const NAMESPACE = "games"; // logical bucket
-
-export async function readState(gameId) {
-const store = getStore(NAMESPACE);
-const raw = await store.get(`games/${gameId}.json`);
-return raw ? JSON.parse(raw) : null;
+function json(status, data) {
+return {
+statusCode: status,
+headers: { 'content-type': 'application/json' },
+body: JSON.stringify(data)
+};
 }
 
-export async function writeState(gameId, state) {
-const store = getStore(NAMESPACE);
-await store.set(`games/${gameId}.json`, JSON.stringify(state), {
-contentType: "application/json"
-});
+async function readBody(event) {
+try { return JSON.parse(event.body || '{}'); }
+catch { return {}; }
+}
+
+function getState(gameId) {
+return DB[gameId];
+}
+function saveState(gameId, state) {
+DB[gameId] = state;
 return state;
 }
 
-export function json(data, status = 200) {
-return new Response(JSON.stringify(data), {
-status,
-headers: { "Content-Type": "application/json" }
-});
-}
+module.exports = { json, readBody, getState, saveState };
