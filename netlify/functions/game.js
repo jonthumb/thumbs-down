@@ -1,24 +1,36 @@
-// netlify/functions/game.js
-import { json, writeState } from "./_store.js";
+const { json, readBody, saveState } = require('./_store');
+const { randomUUID } = require('crypto');
 
-export default async (req) => {
-if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+exports.handler = async (event) => {
+if (event.httpMethod !== 'POST') {
+return json(405, { error: 'Method not allowed' });
+}
 
-const body = await req.json().catch(() => ({}));
-const names = Array.isArray(body.names) ? body.names.filter(Boolean).slice(0, 10) : [];
-if (names.length < 3) return json({ error: "Need at least 3 names" }, 400);
+const { names } = await readBody(event);
+const clean = (Array.isArray(names) ? names : [])
+.map(n => String(n || '').trim())
+.filter(Boolean)
+.slice(0, 10);
 
-const gameId = crypto.randomUUID();
+if (clean.length < 3) return json(400, { error: 'Add at least 3 names' });
+
+const gameId = randomUUID();
 const state = {
-version: 1,
-names,
-tapped: [], // names who are down
-claims: {}, // clientId -> name (one name per device)
+gameId,
+names: clean,
+tapped: [],
 revealed: false,
+dare: null,
 loser: null,
-dare: null
+// deviceId -> name (enforces one device, one name per game)
+deviceLocks: {}
 };
 
-await writeState(gameId, state);
-return json({ gameId, state });
+saveState(gameId, state);
+return json(200, { gameId, state: publicState(state) });
 };
+
+function publicState(state) {
+const { gameId, names, tapped, revealed, dare, loser } = state;
+return { gameId, names, tapped, revealed, dare, loser };
+}
