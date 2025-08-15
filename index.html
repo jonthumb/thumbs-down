@@ -6,7 +6,7 @@
 <title>Thumbs Down</title>
 <meta name="theme-color" content="#111111"/>
 
-<!-- Social preview (update the image path/filename if needed) -->
+<!-- Social preview -->
 <meta property="og:title" content="Thumbs Down" />
 <meta property="og:description" content="Tap fast. Last one down faces a task." />
 <meta property="og:type" content="website" />
@@ -17,110 +17,93 @@
 :root{
 --cream:#F7F1E6;
 --ink:#0F0F10;
---box:#111214;
---green:#2e7d32; /* forest/grass green for down state */
---green-emoji-filter:hue-rotate(90deg) saturate(1.2);
---muted:#a9adb6;
---accent:#2c2f34;
---accent-2:#1b1d20;
+--card:#101114;
+--card2:#0c0d10;
+--green-filter:hue-rotate(90deg) saturate(1.2);
+--muted:#c8ccd2;
 --radius:16px;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
 margin:0;
-font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 background:var(--cream);
 color:var(--ink);
--webkit-font-smoothing:antialiased;
--moz-osx-font-smoothing:grayscale;
+font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
 
-/* Header / logo row */
+/* Header: logo (thumb left), big title one line, tagline beneath */
 header{
-max-width:680px;
-margin:16px auto 10px;
-padding:0 16px;
-display:flex;
-align-items:flex-end;
-gap:14px;
-flex-wrap:nowrap;
+max-width:680px; margin:16px auto 10px; padding:0 16px;
+display:flex; align-items:flex-end; gap:14px; flex-wrap:nowrap;
 }
-.logo-mark{
-font-size:36px; line-height:1;
-transform: rotate(180deg); /* show a down thumb */
-filter: var(--green-emoji-filter);
-}
+.logo-mark{ font-size:36px; line-height:1; transform:rotate(180deg); filter:var(--green-filter); }
 .title-wrap{ display:flex; flex-direction:column; gap:6px; min-width:0; flex:1; }
 .brand{ display:flex; align-items:baseline; gap:10px; white-space:nowrap; overflow:hidden; }
-.brand h1{
-margin:0; font-weight:800; letter-spacing:.2px;
-font-size: clamp(22px, 6.3vw, 34px);
-}
-.tag{
-margin:0; color:#2b2e31; font-style:italic;
-font-size: clamp(13px, 3.2vw, 16px);
-text-align:right; opacity:.9;
-}
+.brand h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size:clamp(22px,6vw,34px); }
+.tag{ margin:0; color:#2b2e31; font-style:italic; font-size:clamp(13px,3.2vw,16px); text-align:right; opacity:.9; }
 
-/* Main card */
+/* Main card (black box) */
 .card{
-max-width:680px; margin:0 auto 18px;
-background:linear-gradient(180deg, var(--box), var(--accent-2));
+max-width:680px; margin:0 auto 18px; padding:16px;
+background:linear-gradient(180deg,var(--card),var(--card2));
 color:#fff; border-radius:var(--radius);
 box-shadow:0 10px 30px rgba(0,0,0,.25);
-padding:16px;
 }
 
 /* Host setup */
-.hint{color:#d0d3d8;font-size:13px;margin:4px 0 10px}
+.hint{ color:#d0d3d8; font-size:13px; margin:4px 0 10px; }
 .names-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
 .names-grid input{
-width:100%; border-radius:10px; background:#1a1c20; color:#fff;
-border:1px solid #2b2d31; padding:10px 12px; font-size:15px;
+width:100%; border-radius:10px; background:#181a1f; color:#fff;
+border:1px solid #292c33; padding:10px 12px; font-size:15px;
 }
 .row{ display:flex; gap:8px; align-items:center; justify-content:flex-end; margin-top:10px; }
 .btn{ appearance:none; border:0; border-radius:10px; padding:10px 14px; font-weight:700; font-size:14px; cursor:pointer; }
 .btn.primary{ background:#21c063; color:#05230f; }
-.btn.ghost{ background:#24262b; color:#e6e8ec; }
-.btn.small{ padding:8px 12px; font-size:13px }
+.btn.ghost{ background:#25272c; color:#e7eaee; }
+.btn.small{ padding:8px 12px; font-size:13px; }
 
-/* Table / thumbs grid */
+/* Table (thumbs grid) */
 .table-area{ margin-top:12px; }
 .thumbs{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; justify-items:center; align-items:center; }
 .person{ display:flex; flex-direction:column; align-items:center; gap:2px; }
 .thumb{
 font-size:34px; line-height:1; background:transparent; border:0; cursor:pointer;
-transition: transform .22s ease, opacity .2s ease;
-filter: drop-shadow(0 1px 0 rgba(0,0,0,.35));
+transition:transform .22s ease, opacity .2s ease;
+filter:drop-shadow(0 1px 0 rgba(0,0,0,.35));
 }
-.thumb.down{ transform: rotate(180deg); filter: var(--green-emoji-filter) drop-shadow(0 1px 0 rgba(0,0,0,.35)); }
-.thumb.locked{ opacity:.6; cursor:default }
+.thumb.down{ transform:rotate(180deg); filter:var(--green-filter) drop-shadow(0 1px 0 rgba(0,0,0,.35)); }
+.thumb.locked{ opacity:.6; cursor:default; }
 .name{ margin-top:4px; font-size:12px; color:#cfd3d9; text-align:center; width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
 /* Punisher modal */
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:flex-end; justify-content:center; padding:16px; }
-.modal.show{ display:flex }
+.modal.show{ display:flex; }
 .sheet{
 width:100%; max-width:680px; background:#0f1013; color:#fff; border-radius:16px 16px 12px 12px;
 padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.45);
 }
-.sheet h3{ margin:0 0 8px; font-size:18px }
-.sheet p{ margin:0 0 10px; color:#cdd2d8; font-size:14px }
+.sheet h3{ margin:0 0 8px; font-size:18px; }
+.sheet p{ margin:0 0 10px; color:#cdd2d8; font-size:14px; }
 .sheet textarea{
-width:100%; min-height:80px; background:#181a1e; border:1px solid #2a2c31; color:#fff; border-radius:12px; padding:10px; font-size:14px;
+width:100%; min-height:80px; background:#181a1e; border:1px solid #2a2c31;
+color:#fff; border-radius:12px; padding:10px; font-size:14px;
 }
-.actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:10px }
+.actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:10px; }
 
 /* Toast */
-#toast{ position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
-background:#111; color:#fff; padding:8px 12px; border-radius:8px; opacity:0; pointer-events:none; transition:opacity .2s }
-#toast.show{ opacity:.95 }
+#toast{
+position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
+background:#111; color:#fff; padding:8px 12px; border-radius:8px;
+opacity:0; pointer-events:none; transition:opacity .2s;
+}
+#toast.show{ opacity:.95; }
 
-/* Small screens */
-@media (max-width:400px){
-.names-grid{ grid-template-columns:1fr }
-.thumbs{ grid-template-columns:repeat(4,1fr) }
+@media (max-width:420px){
+.names-grid{ grid-template-columns:1fr; }
+.thumbs{ grid-template-columns:repeat(4,1fr); }
 }
 </style>
 </head>
@@ -130,22 +113,20 @@ background:#111; color:#fff; padding:8px 12px; border-radius:8px; opacity:0; poi
 <header>
 <div class="logo-mark" aria-hidden="true">👎</div>
 <div class="title-wrap">
-<div class="brand">
-<h1>THUMBS&nbsp;DOWN</h1>
-</div>
+<div class="brand"><h1>THUMBS&nbsp;DOWN</h1></div>
 <p class="tag">Tap fast. Last one down faces a task.</p>
 </div>
 </header>
 
 <!-- CARD -->
 <main class="card">
-<!-- HOST SETUP (hidden if joining a game via ?g=...) -->
+<!-- HOST SETUP (hidden for players who join via ?g=...) -->
 <div id="host-setup">
 <div class="hint">Add up to 10 friends</div>
 <div class="names-grid" id="nameInputs"></div>
 <div class="row">
-<button class="btn ghost small" id="resetBtn" type="button" aria-label="Reset">Reset</button>
-<button class="btn primary small" id="confirmBtn" type="button" aria-label="Confirm">Confirm</button>
+<button class="btn ghost small" id="resetBtn" type="button">Reset</button>
+<button class="btn primary small" id="confirmBtn" type="button">Confirm</button>
 </div>
 </div>
 
@@ -155,7 +136,7 @@ background:#111; color:#fff; padding:8px 12px; border-radius:8px; opacity:0; poi
 </div>
 </main>
 
-<!-- PUNISHER MODAL (penultimate tap) -->
+<!-- PUNISHER MODAL (penultimate tap only) -->
 <div class="modal" id="punisherModal" aria-hidden="true">
 <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="punishTitle">
 <h3 id="punishTitle">Congratulations — you’re the Punisher</h3>
@@ -172,7 +153,7 @@ background:#111; color:#fff; padding:8px 12px; border-radius:8px; opacity:0; poi
 <div id="toast"></div>
 
 <script>
-// ---------- helpers ----------
+/* ---------------- helpers & globals ---------------- */
 const $ = sel => document.querySelector(sel);
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
 
@@ -185,10 +166,15 @@ return v;
 }
 const clientId = getClientId();
 
-// inputs for host
+// current game id for this page (host after Confirm, or player via ?g=)
+let currentGameId = null;
+
+// keep last state (no heavy use; render always receives gameId explicitly)
+let lastState = null;
+
+/* ---------------- build host inputs ---------------- */
 const nameInputsEl = $("#nameInputs");
-const MAX = 10;
-for (let i=0;i<MAX;i++){
+for (let i=0;i<10;i++){
 const inp = document.createElement('input');
 inp.type = 'text';
 inp.placeholder = `Name ${i+1}`;
@@ -196,54 +182,57 @@ inp.autocapitalize = 'words';
 nameInputsEl.appendChild(inp);
 }
 
-// state (kept light — we pass gameId through explicitly)
-let current = null; // last fetched state (without guaranteed gameId)
-
-// ---------- network ----------
+/* ---------------- API helpers ---------------- */
 async function apiCreate(names){
 const r = await fetch('/api/game',{method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({names})});
 const d = await r.json(); if(!r.ok) throw new Error(d.error||'create failed'); return d; // { gameId, state }
 }
 async function apiState(gameId){
 const r = await fetch(`/api/state?gameId=${encodeURIComponent(gameId)}`);
-const d = await r.json(); if(!r.ok) throw new Error(d.error||'state failed'); return d; // state (no gameId)
+const d = await r.json(); if(!r.ok) throw new Error(d.error||'state failed'); return d;
 }
 async function apiTap(gameId,name){
 const r = await fetch('/api/tap',{method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({gameId,name,clientId})});
-const d = await r.json(); if(!r.ok) throw new Error(d.error||'tap failed'); return d; // state (no gameId)
+const d = await r.json(); if(!r.ok) throw new Error(d.error||'tap failed'); return d;
 }
 async function apiReveal(gameId,dare){
 const r = await fetch('/api/reveal',{method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({gameId,dare})});
-const d = await r.json(); if(!r.ok) throw new Error(d.error||'reveal failed'); return d;// state (no gameId)
+const d = await r.json(); if(!r.ok) throw new Error(d.error||'reveal failed'); return d;
 }
 
-// ---------- UI render ----------
+/* ---------------- render ---------------- */
 function render(stateWithId){
-current = stateWithId; // keep most recent
+lastState = stateWithId;
 const { gameId, names, tapped } = stateWithId;
 
-// show table
+// show table (hide host setup if still visible)
 $("#tableArea").hidden = false;
 
-// build thumbs
-const wrap = $("#thumbs"); wrap.innerHTML='';
+const wrap = $("#thumbs"); wrap.innerHTML = '';
 names.forEach(n=>{
 const isDown = tapped.includes(n);
 const cell = document.createElement('div'); cell.className='person';
 const btn = document.createElement('button'); btn.className='thumb'; btn.type='button';
 btn.textContent = isDown ? '👎' : '👍';
 if(isDown) btn.classList.add('down');
-btn.addEventListener('click', ()=> onTap(n, gameId, btn));
-const label = document.createElement('div'); label.className='name'; label.textContent=n;
+btn.addEventListener('click', ()=> onTap(n, btn));
+const label = document.createElement('div'); label.className='name'; label.textContent = n;
 cell.appendChild(btn); cell.appendChild(label);
 wrap.appendChild(cell);
 });
 
-applyDeviceLock(gameId);
+// device one-tap lock
+const locked = localStorage.getItem(`td-lock-${gameId}`);
+if (locked){
+document.querySelectorAll('.thumb').forEach(b=>{
+b.disabled = true;
+if(!b.classList.contains('down')) b.classList.add('locked');
+});
+}
 
-// if penultimate reached (exactly one remaining), show modal for *this device* only if they just tapped
+// if penultimate (exactly one remaining) and this device has tapped → show modal
 const remaining = names.filter(n=>!tapped.includes(n));
-if (remaining.length === 1 && localStorage.getItem(`td-lock-${gameId}`)) {
+if (remaining.length === 1 && locked){
 $("#loserName").textContent = remaining[0];
 $("#punisherModal").classList.add('show');
 $("#punisherModal").setAttribute('aria-hidden','false');
@@ -253,32 +242,25 @@ $("#punisherModal").setAttribute('aria-hidden','true');
 }
 }
 
-function applyDeviceLock(gameId){
-const locked = localStorage.getItem(`td-lock-${gameId}`);
-if(locked){
-document.querySelectorAll('.thumb').forEach(b=>{
-b.disabled = true;
-if(!b.classList.contains('down')) b.classList.add('locked');
-});
-}
-}
-
-// ---------- actions ----------
+/* ---------------- actions ---------------- */
 $("#confirmBtn").addEventListener('click', async ()=>{
 try{
 const names = [...nameInputsEl.querySelectorAll('input')].map(i=>i.value.trim()).filter(Boolean).slice(0,10);
-if(names.length<3){ toast('Add at least 3 names'); return; }
+if(names.length < 3){ toast('Add at least 3 names'); return; }
 
 const { gameId, state } = await apiCreate(names);
 
-// hide host setup once created
-$("#host-setup").style.display='none';
+// remember game id globally (fixes "Missing game ID")
+currentGameId = gameId;
 
-// ensure we render with gameId included
+// hide host UI so players never see inputs on join
+$("#host-setup").style.display = 'none';
+
+// render with table
 render({ ...state, gameId });
 
-// update URL for players
-history.replaceState(null,'',`/?g=${encodeURIComponent(gameId)}`);
+// update URL with ?g= for sharing
+history.replaceState(null,'',`?g=${encodeURIComponent(gameId)}`);
 
 toast('Game created. Tap your name to start!');
 }catch(e){ toast(e.message); }
@@ -290,9 +272,13 @@ try{ localStorage.clear(); }catch(_){}
 location.href='/';
 });
 
-async function onTap(canonicalName, gameId, el){
-// block if this device already tapped in this game
-if(localStorage.getItem(`td-lock-${gameId}`)){
+async function onTap(canonicalName, el){
+if (!currentGameId){
+toast('Still setting up… please try again');
+return;
+}
+// block double tap from same device in this game
+if (localStorage.getItem(`td-lock-${currentGameId}`)){
 el.classList.add('wobble'); setTimeout(()=>el.classList.remove('wobble'),250);
 return;
 }
@@ -300,59 +286,52 @@ return;
 // optimistic flip
 el.classList.add('down'); el.textContent='👎';
 try{
-const state = await apiTap(gameId, canonicalName);
-// keep gameId with state for subsequent actions
-render({ ...state, gameId });
-
-// lock this device for this game
-localStorage.setItem(`td-lock-${gameId}`, canonicalName);
+const state = await apiTap(currentGameId, canonicalName);
+// lock this device
+localStorage.setItem(`td-lock-${currentGameId}`, canonicalName);
+render({ ...state, gameId: currentGameId });
 }catch(e){
-// revert UI if server failed
 el.classList.remove('down'); el.textContent='👍';
 toast(e.message);
 }
 }
 
-// Punisher modal actions
+/* ---------------- punisher modal ---------------- */
 $("#closePunisher").addEventListener('click', ()=>{
 $("#punisherModal").classList.remove('show');
 $("#punisherModal").setAttribute('aria-hidden','true');
 });
 
 $("#sharePunisher").addEventListener('click', async ()=>{
-if(!current) return;
-const { gameId, loser } = { gameId: current.gameId, loser: current.loser };
+if (!currentGameId) return;
 const dare = ($("#dareText").value || '').trim();
-
 try{
-const state = await apiReveal(gameId, dare);
-
+const state = await apiReveal(currentGameId, dare);
 $("#punisherModal").classList.remove('show');
 $("#punisherModal").setAttribute('aria-hidden','true');
 
-// Build WhatsApp share text
-const url = location.origin + `/?g=${encodeURIComponent(gameId)}&reveal=1`;
+const url = location.origin + `/?g=${encodeURIComponent(currentGameId)}&reveal=1`;
 const text = `Thumbs Down — result:\n\nLoser: ${state.loser || 'unknown'}\nTask: ${state.dare || '(none)'}\n\nOpen: ${url}`;
 const wa = `https://wa.me/?text=${encodeURIComponent(text)}`;
 
-if(navigator.share){
+if (navigator.share){
 try { await navigator.share({ title:'Thumbs Down', text }); }
 catch(_) { location.href = wa; }
-}else{
+} else {
 location.href = wa;
 }
 }catch(e){ toast(e.message); }
 });
 
-// ---------- hydrate on load (join as player via ?g=) ----------
+/* ---------------- hydrate on load (player join) ---------------- */
 (async function init(){
-const params = new URLSearchParams(location.search);
-const g = params.get('g');
-if(g){
-// joining a running game → hide host UI
+const g = new URLSearchParams(location.search).get('g');
+if (g){
+// joining a running game → hide host inputs
 $("#host-setup").style.display='none';
 try{
 const s = await apiState(g);
+currentGameId = g; // remember id (fixes missing id for taps)
 render({ ...s, gameId: g });
 }catch(e){ toast(e.message); }
 }
@@ -360,3 +339,4 @@ render({ ...s, gameId: g });
 </script>
 </body>
 </html>
+
