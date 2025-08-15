@@ -1,23 +1,26 @@
-// netlify/functions/reveal.js
-import { json, readState, writeState } from "./_store.js";
+const { json, readBody, getState, saveState } = require('./_store');
 
-export default async (req) => {
-if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
-const { gameId, dare } = await req.json().catch(() => ({}));
-if (!gameId) return json({ error: "Missing gameId" }, 400);
+exports.handler = async (event) => {
+if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
 
-const state = await readState(gameId);
-if (!state) return json({ error: "Not found" }, 404);
-if (state.revealed) return json(state);
+const { gameId, dare } = await readBody(event);
+if (!gameId) return json(400, { error: 'Missing gameId' });
 
-const loser = state.names.find(n => !state.tapped.includes(n));
-if (!loser) return json({ error: "No loser yet" }, 400);
+const state = getState(gameId);
+if (!state) return json(404, { error: 'Game not found' });
+
+// Determine loser = only name not tapped
+const loser = state.names.find(n => !state.tapped.includes(n)) || null;
 
 state.revealed = true;
 state.loser = loser;
-state.dare = String(dare || "").slice(0, 50);
-state.version++;
+state.dare = String(dare || '').slice(0, 200);
 
-await writeState(gameId, state);
-return json(state);
+saveState(gameId, state);
+return json(200, publicState(state));
 };
+
+function publicState(state) {
+const { gameId, names, tapped, revealed, dare, loser } = state;
+return { gameId, names, tapped, revealed, dare, loser };
+}
