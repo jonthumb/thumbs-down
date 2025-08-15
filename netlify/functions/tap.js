@@ -1,39 +1,56 @@
 // netlify/functions/tap.js
-import { json, readState, writeState } from "./_store.js";
+// Enforce: one device (clientId) can only lock one name per game.
 
-export default async (req) => {
-if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
-const { gameId, name, clientId } = await req.json().catch(() => ({}));
+const { loadGame, saveGame } = require('./lib/state'); 
+// ^^^ Adjust this path to your real helpers (same ones used by /api/state and /api/reveal)
+
+exports.handler = async (event) => {
+if (event.httpMethod !== 'POST') {
+return { statusCode: 405, body: 'Method Not Allowed' };
+}
+
+try {
+const body = JSON.parse(event.body || '{}');
+const { gameId, name, clientId } = body;
 
 if (!gameId || !name || !clientId) {
-return json({ error: "Missing gameId, name or clientId" }, 400);
+return { statusCode: 400, body: JSON.stringify({ error: 'Missing gameId, name or clientId' }) };
 }
 
-const state = await readState(gameId);
-if (!state) return json({ error: "Not found" }, 404);
-if (state.revealed) return json(state);
-
-// Create claims bag if missing (for old games)
-if (!state.claims) state.claims = {};
-
-// If this client has already claimed a name, they cannot change it
-const claimed = state.claims[clientId];
-if (claimed && claimed !== name) {
-// Return current state unchanged
-return json(state);
+const state = await loadGame(gameId);
+if (!state) {
+return { statusCode: 404, body: JSON.stringify({ error: 'Game not found' }) };
 }
 
-// If not claimed yet, record their choice
-if (!claimed) {
+// Ensure structures exist
+state.tapped = Array.isArray(state.tapped) ? state.tapped : [];
+state.claims = state.claims || {}; // { [clientId]: "Alice" }
+
+const alreadyClaimed = state.claims[clientId];
+
+// If this device already claimed a different name, block
+if (alreadyClaimed && alreadyClaimed !== name) {
+return {
+statusCode: 409,
+body: JSON.stringify({ error: "You've already tapped a different name on this device for this game." })
+};
+}
+
+// If this name is already locked by anyone, block
+if (state.tapped.includes(name)) {
+return {
+statusCode: 409,
+body: JSON.stringify({ error: "That name is already locked." })
+};
+}
+
+// Record claim and tap (idempotent for same device+same name)
 state.claims[clientId] = name;
-}
+if (!state.tapped.includes(name)) state.tapped.push(name);
 
-// Apply the tap if that name wasn't already down
-if (state.names.includes(name) && !state.tapped.includes(name)) {
-state.tapped.push(name);
-state.version++;
+await saveGame(gameId, state);
+return { statusCode: 200, body: JSON.stringify(state) };
+} catch (e) {
+return { statusCode: 500, body: JSON.stringify({ error: 'Server error', detail: e.message }) };
 }
-
-await writeState(gameId, state);
-return json(state);
 };
