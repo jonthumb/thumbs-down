@@ -1,13 +1,16 @@
-// netlify/functions/state.js
-import { json, readState } from "./_store.js";
+const { json, getState } = require('./_store');
 
-export default async (req) => {
-const url = new URL(req.url);
-const gameId = url.searchParams.get("gameId");
-if (!gameId) return json({ error: "Missing gameId" }, 400);
+exports.handler = async (event) => {
+const gameId = (event.queryStringParameters || {}).gameId;
+if (!gameId) return json(400, { error: 'Missing gameId' });
 
-const state = await readState(gameId);
-if (!state) return json({ error: "Not found" }, 404);
+const state = getState(gameId);
+if (!state) return json(404, { error: 'Game not found' });
 
-return json(state);
+return json(200, publicState(state));
 };
+
+function publicState(state) {
+const { gameId, names, tapped, revealed, dare, loser } = state;
+return { gameId, names, tapped, revealed, dare, loser };
+}
