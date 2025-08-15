@@ -9,7 +9,7 @@
 :root{
 --beige:#F3EADD; --black:#0B0B0C; --black-2:#121316;
 --fg:#ECECEC; --muted:#C0C6CD;
---forest:#3BA164; /* lighter forest/grass green (logo + table DOWN) */
+--forest:#3BA164; /* forest/grass green (logo + table DOWN) */
 --grey:#8D9197; /* table UP grey */
 --chip:#121316; --chip-b:#1C1F26;
 --shadow:0 18px 50px rgba(0,0,0,.35);
@@ -22,10 +22,14 @@ body{background:var(--beige);color:var(--fg);font:16px/1.35 Manrope,system-ui,-a
 
 /* ===== TOP LOGO (one-line header; tagline below right) ===== */
 .logoWrap{width:100%;display:grid;grid-template-rows:auto auto;row-gap:6px}
-.logoHeader{display:flex;align-items:center;gap:12px}
+.logoHeader{display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
 .logoMark{width:62px;height:62px;display:grid;place-items:center;flex:0 0 auto}
 .logoMark svg{width:62px;height:62px;display:block;fill:var(--forest)} /* flat DOWN thumb */
-.title{margin:0;font-size:42px;font-weight:900;letter-spacing:.6px;color:#121417}
+.title{
+margin:0;
+font-size:clamp(28px, 6vw, 42px); /* scales on small screens, stays one line */
+font-weight:900; letter-spacing:.6px; color:#121417; white-space:nowrap
+}
 .tag{margin:0;color:#2B2D30;font-family:Pacifico,cursive;font-size:18px;justify-self:end}
 
 /* ===== CARD ===== */
@@ -110,7 +114,7 @@ opacity:0; transition:opacity .25s ease}
 </div>
 <h1 class="title">THUMBS DOWN</h1>
 </div>
-<p class="tag">tap or be tasked</p>
+<p class="tag">Last to Tap Gets Punished</p>
 </div>
 
 <div class="card">
@@ -129,7 +133,10 @@ opacity:0; transition:opacity .25s ease}
 <div id="appView">
 <div id="hostMount"></div>
 <div class="table-wrap hidden" id="tableWrap">
-<div class="table"><div class="edge"></div><div id="board" class="board"></div></div>
+<div class="table">
+<div class="edge"></div>
+<div id="board" class="board"></div>
+</div>
 </div>
 </div>
 </div>
@@ -150,7 +157,7 @@ opacity:0; transition:opacity .25s ease}
 <!-- HOST TEMPLATE (only when there is no ?g=) -->
 <template id="hostTpl">
 <div id="hostSetup" class="setup">
-<div class="hint" style="margin:2px 0 10px;color:#C0C6CD">Add up to 10 names, then tap Confirm.</div>
+<div class="hint" style="margin:2px 0 10px;color:#C0C6CD">Add up to 10 friends.</div>
 <div id="nameFields" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
 <input placeholder="Name 1"><input placeholder="Name 2"><input placeholder="Name 3"><input placeholder="Name 4">
 <input placeholder="Name 5"><input placeholder="Name 6"><input placeholder="Name 7"><input placeholder="Name 8">
@@ -163,15 +170,16 @@ opacity:0; transition:opacity .25s ease}
 </div>
 </template>
 
-<!-- PENULTIMATE MODAL -->
+<!-- PENULTIMATE MODAL (only the penultimate user sees this) -->
 <template id="penultTpl">
 <div class="modal" id="penultModal" role="dialog" aria-modal="true">
 <div class="sheet">
-<div class="h">Congratulations, you are the last of the winners.</div>
-<div class="p">Now set a DARE for <strong id="loserName"></strong>.</div>
+<div class="h">Congratulations! You are the Punisher.</div>
+<div class="p" id="penultLine2"></div>
+<div class="p">Now set them their dare or task.</div>
 <div class="row">
-<input id="dareInput" maxlength="50" placeholder="Today’s dare (≤50 chars)" />
-<button id="confirmDare" class="btn btn-primary" type="button">Break the news</button>
+<input id="dareInput" maxlength="50" placeholder="Dare or task (≤ 50 chars)" />
+<button id="confirmDare" class="btn btn-primary" type="button">Share back to your group</button>
 </div>
 </div>
 </div>
@@ -316,7 +324,7 @@ me.tappedOnce=true; me.myName=name;
 if(me.isHost && !me.inviteShared && gameId){
 me.inviteShared=true;
 const inviteURL=location.origin+location.pathname+"?g="+encodeURIComponent(gameId);
-const text=`Thumbs Down — Tap or be tasked.\n${inviteURL}`;
+const text=`Thumbs Down — Last to Tap Gets Punished.\n${inviteURL}`;
 setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(text); }, 900);
 }
 
@@ -344,33 +352,34 @@ const iAmTapped=me.myName && state.tapped.includes(me.myName);
 if(!(remaining===1 && iAmTapped)){ closePenultModal(); me.penultShown=false; }
 }
 
-/* Modal for penultimate player */
+/* Modal for penultimate player (new wording) */
 function openPenultModal(loserName){
 closePenultModal();
 const tpl=document.getElementById("penultTpl").content.cloneNode(true);
 document.body.appendChild(tpl);
-document.getElementById("loserName").textContent=loserName;
+const line2 = document.getElementById("penultLine2");
+line2.textContent = `The person who didn't tap their name is ${loserName} and must be punished.`;
 document.getElementById("confirmDare").onclick=async ()=>{
 const dv=(document.getElementById("dareInput").value||"").trim().slice(0,50);
-if(!dv){ say("Type a dare first"); return; }
+if(!dv){ say("Type a dare or task first"); return; }
 const res=await fetch("/api/reveal",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,dare:dv})});
 const s=await res.json(); if(!res.ok){ say(s.error||"Reveal failed"); return; }
 state=s;
 const revealURL=location.origin+location.pathname+"?g="+encodeURIComponent(gameId);
-const text=`👉 Click to reveal today’s massive loser:\n${revealURL}`;
+const text=`👉 Click to reveal the loser:\n${revealURL}`;
 location.href="https://wa.me/?text="+encodeURIComponent(text);
 showReveal(); closePenultModal();
 };
 }
 function closePenultModal(){ const m=document.getElementById("penultModal"); if(m) m.remove(); }
 
-/* Reveal view */
+/* Reveal view (keeps simple wording) */
 function showReveal(){
 stopPolling();
 $("appView").classList.add("hidden");
 revealView.classList.remove("hidden");
-$("headline").textContent=`Today’s massive loser: ${state.loser||"Someone"}`;
-$("dareLine").textContent=state.dare?`Your dare is: ${state.dare}`:"";
+$("headline").textContent=`Today's loser is ${state.loser||"someone"}.`;
+$("dareLine").textContent=state.dare?`Dare/Task: ${state.dare}`:"";
 $("meta").textContent=new Date().toLocaleString();
 }
 
