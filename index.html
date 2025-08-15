@@ -3,71 +3,38 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Thumbs Down</title>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800;900&family=Pacifico&display=swap" rel="stylesheet">
-<meta name="theme-color" content="#0B0B0C">
+<title>Thumbs Down — Emoji Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@800;900&family=Pacifico&display=swap" rel="stylesheet">
+
 <style>
 :root{
-/* THEME — beige / black / green */
---beige:#F3EADD; /* page background */
---black:#0B0B0C; /* cards */
---black-2:#121316; /* darker accents */
---fg:#ECECEC; /* text on black */
---muted:#C0C6CD; /* subtle text */
---green:#20C977; /* accent */
---green-soft:rgba(32,201,119,.16);
---grey:#C9CFD8; /* default thumb */
---chip:#121316; /* chip bg */
---chip-b:#1C1F26;
+--beige:#F3EADD; --black:#0B0B0C; --black-2:#121316;
+--fg:#ECECEC; --muted:#C0C6CD;
+--green:#20C977; --grey:#7D7F84;
+--chip:#121316; --chip-b:#1C1F26;
 --shadow:0 18px 50px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
-body{
-background:var(--beige);
-color:var(--fg);
-font:16px/1.35 Manrope,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-}
-
+body{background:var(--beige);color:var(--fg);font:16px/1.35 Manrope,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
 .wrap{min-height:100%;display:grid;place-items:center;padding:18px}
-.card{
-width:min(100%,760px);
-background:var(--black);
-border:1px solid rgba(255,255,255,.06);
-border-radius:22px;
-box-shadow:var(--shadow);
-padding:18px 18px 26px;
-}
+.card{width:min(100%,760px);background:var(--black);border:1px solid rgba(255,255,255,.06);
+border-radius:22px;box-shadow:var(--shadow);padding:18px 18px 26px}
 
-/* Header */
+/* Header / logo */
 .head{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
 .brand{display:flex;gap:14px;align-items:center}
-.logoBox{
-width:68px;height:68px;border-radius:18px;background:var(--black-2);
-display:grid;place-items:center;border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 22px rgba(0,0,0,.4)
-}
-.logoBox svg{width:36px;height:36px;display:block;transition:transform .30s ease, fill .25s ease}
-.logoBox.up svg{transform:rotate(0deg)}
-.logoBox.down svg{transform:rotate(180deg)}
-.logoBox .thumbFill{fill:var(--grey)}
-.logoBox.down .thumbFill{fill:var(--green)}
-
+.logoBox{width:68px;height:68px;border-radius:18px;background:var(--black-2);
+display:grid;place-items:center;border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 22px rgba(0,0,0,.4)}
+.logoBox svg{width:40px;height:40px;display:block;color:var(--green)} /* fixed green 👎; no rotate/grey */
 .wordmark{line-height:1}
 .title{margin:0;font-size:28px;font-weight:900;color:#F7F8F9;letter-spacing:.2px}
-.tag{margin:4px 0 0;color:#EDEDED;opacity:.98;font-family:Pacifico,cursive;font-size:18px;letter-spacing:.2px}
+.tag{margin:4px 0 0;color:var(--green);font-family:Pacifico,cursive;font-size:18px;letter-spacing:.2px}
 
 .btn{border:0;border-radius:12px;padding:12px 14px;font:inherit;font-weight:900;cursor:pointer}
 .btn-primary{background:#0EA5E9;color:#fff;box-shadow:0 10px 22px rgba(14,165,233,.25)}
 .btn-ghost{background:#121316;color:#e6e9ef;border:1px solid rgba(255,255,255,.12)}
 .hidden{display:none}
-
-/* Host setup */
-.setup{margin:16px 2px 12px;display:grid;gap:10px}
-.hint{color:#C9CECF;font-size:12px;margin-top:-2px}
-.grid-names{display:grid;gap:8px;grid-template-columns:1fr 1fr}
-@media (min-width:520px){ .grid-names{grid-template-columns:1fr 1fr 1fr} }
-.namebox{background:#121316;border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:10px}
-.namebox input{width:100%;border:0;background:transparent;color:#F2F5F6;font:800 16px/1.2 Manrope;outline:none;padding:2px 0}
 
 .header-gap{height:20px}
 
@@ -75,19 +42,15 @@ display:grid;place-items:center;border:1px solid rgba(255,255,255,.08);box-shado
 .table-wrap{display:grid;place-items:center}
 .table{
 width:min(100%,740px);aspect-ratio:16/10;position:relative;border-radius:26px;
-background:
-radial-gradient(70% 100% at 50% 30%, rgba(255,255,255,.06), transparent 60%),
-linear-gradient(180deg,#13151B,#0D0E12);
+background:radial-gradient(70% 100% at 50% 30%, rgba(255,255,255,.06), transparent 60%), linear-gradient(180deg,#13151B,#0D0E12);
 border:1px solid rgba(255,255,255,.08);
 box-shadow:inset 0 10px 24px rgba(255,255,255,.03), inset 0 -10px 22px rgba(0,0,0,.45), var(--shadow)
 }
-.edge{
-position:absolute;inset:7% 5%;border-radius:999px;border:2px solid rgba(255,255,255,.12);
-box-shadow:inset 0 0 0 6px rgba(255,255,255,.03);pointer-events:none
-}
+.edge{position:absolute;inset:7% 5%;border-radius:999px;border:2px solid rgba(255,255,255,.12);
+box-shadow:inset 0 0 0 6px rgba(255,255,255,.03);pointer-events:none}
 .board{position:absolute;inset:0}
 
-/* Chips */
+/* Chips (emoji buttons) */
 .chip{
 position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;gap:4px;
 width:66px;height:66px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-b);
@@ -95,32 +58,26 @@ box-shadow:0 12px 24px rgba(0,0,0,.45);cursor:pointer;user-select:none;touch-act
 transition:transform .18s ease
 }
 .chip:active{ transform:translate(-50%,-50%) scale(.97) }
-.nm{
-font-weight:900;font-size:10px;text-align:center;color:#E6EBEF;padding:0 6px;max-width:58px;
-white-space:nowrap;overflow:hidden;text-overflow:ellipsis
-}
+.nm{font-weight:900;font-size:10px;text-align:center;color:#E6EBEF;padding:0 6px;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip.disabled{opacity:.55;cursor:not-allowed}
 
-/* Thumb artwork + animation */
-.thumb svg{width:24px;height:24px;display:block;transition:transform .28s ease}
-.thumb .thumbFill{fill:var(--grey)}
-.thumb.up svg{ transform:rotate(0deg) }
-.thumb.down svg{ transform:rotate(180deg) }
-.chip.down .thumb .thumbFill{ fill:var(--green) }
-.chip.down{ background:var(--green-soft); border-color:rgba(32,201,119,.45) }
+/* Twemoji SVG in chips: recoloured via CSS 'color' + rotated for state */
+.thumb svg{width:24px;height:24px;display:block;transition:transform .28s ease, color .25s ease}
+.thumb.up svg{ transform:rotate(180deg); color:var(--grey) } /* 👍 grey (by rotating 👎) */
+.thumb.down svg{ transform:rotate(0deg); color:var(--green) } /* 👎 green */
 
-/* Wobble for invalid taps */
+/* Wobble if invalid tap */
 @keyframes wobble{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 6px),-50%)}75%{transform:translate(calc(-50% + 6px),-50%)}}
 .chip.wobble{ animation:wobble .28s ease }
 
 /* Toast */
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#121316;border:1px solid rgba(255,255,255,.12);padding:10px 14px;border-radius:12px;font-weight:900;z-index:50}
 
-/* Modal */
+/* Modal (penultimate) */
 .modal{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);z-index:60}
 .sheet{width:min(92%,560px);background:var(--black);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:grid;gap:10px}
 .h{font-weight:900;font-size:18px}
-.p{color:#C9CECF;font-size:13px}
+.p{color:#C0C6CD;font-size:13px}
 .row{display:grid;grid-template-columns:1fr auto;gap:8px}
 .row input{background:#121316;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#E6E9EF;padding:12px}
 </style>
@@ -128,19 +85,15 @@ white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 <body>
 <div class="wrap">
 <div class="card">
-<!-- HEADER -->
+<!-- HEADER: fixed green 👎 -->
 <div class="head">
 <div class="brand">
-<div id="logoBox" class="logoBox up" aria-hidden="true">
-<!-- LOGO uses the exact same glyph as chips -->
-<svg viewBox="0 0 64 64" aria-hidden="true">
-<path class="thumbFill" d="M24 10c2 0 3.9 1.1 4.9 2.9l7.3 13.5H49c4.8 0 8.6 3.9 8.6 8.6c0 1.5-.4 3-1.1 4.2l-14 22.6c-1.2 1.9-3.5 2.9-5.7 2.4c-2.1-.4-3.7-2.1-4-4.2l-1.2-11H22.7C17.9 49 14 45.1 14 40.3V16.6C14 12.9 17 10 20.7 10H24Z"/>
-<rect x="8" y="16" width="8" height="28" rx="2" ry="2" fill="rgba(255,255,255,.25)"/>
-</svg>
+<div id="logoBox" class="logoBox">
+<div id="logoMark">👎</div>
 </div>
 <div class="wordmark">
-<p class="title">Thumbs Down</p>
-<p class="tag">Tap or be tasked.</p>
+<p class="title">THUMBS DOWN</p>
+<p class="tag">Tap or be tasked</p>
 </div>
 </div>
 <button id="resetBtn" class="btn btn-ghost hidden">Reset</button>
@@ -148,23 +101,20 @@ white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 
 <div class="header-gap"></div>
 
-<!-- REVEAL -->
+<!-- REVEAL VIEW -->
 <div id="revealView" class="hidden">
 <div style="text-align:center">
 <div id="headline" style="font-size:22px;font-weight:900;margin:4px 0 6px"></div>
-<div id="dareLine" style="color:#C9CECF;font-size:12px"></div>
-<div id="meta" style="color:#C9CECF;font-size:12px"></div>
+<div id="dareLine" style="color:#C0C6CD;font-size:12px"></div>
+<div id="meta" style="color:#C0C6CD;font-size:12px"></div>
 </div>
 </div>
 
-<!-- APP -->
+<!-- APP VIEW -->
 <div id="appView">
 <div id="hostMount"></div>
 <div class="table-wrap hidden" id="tableWrap">
-<div class="table">
-<div class="edge"></div>
-<div id="board" class="board"></div>
-</div>
+<div class="table"><div class="edge"></div><div id="board" class="board"></div></div>
 </div>
 </div>
 
@@ -172,29 +122,22 @@ white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 </div>
 </div>
 
-<!-- HOST TEMPLATE (injected only when there is no ?g=) -->
+<!-- HOST TEMPLATE (only when there is no ?g=) -->
 <template id="hostTpl">
 <div id="hostSetup" class="setup">
-<div class="hint">Add up to 10 names, then tap Confirm.</div>
-<div class="grid-names" id="nameFields">
-<div class="namebox"><input placeholder="Name 1"></div>
-<div class="namebox"><input placeholder="Name 2"></div>
-<div class="namebox"><input placeholder="Name 3"></div>
-<div class="namebox"><input placeholder="Name 4"></div>
-<div class="namebox"><input placeholder="Name 5"></div>
-<div class="namebox"><input placeholder="Name 6"></div>
-<div class="namebox"><input placeholder="Name 7"></div>
-<div class="namebox"><input placeholder="Name 8"></div>
-<div class="namebox"><input placeholder="Name 9"></div>
-<div class="namebox"><input placeholder="Name 10"></div>
+<div class="hint" style="margin:2px 0 10px;color:#C0C6CD">Add up to 10 names, then tap Confirm.</div>
+<div id="nameFields" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+<input placeholder="Name 1"><input placeholder="Name 2"><input placeholder="Name 3"><input placeholder="Name 4">
+<input placeholder="Name 5"><input placeholder="Name 6"><input placeholder="Name 7"><input placeholder="Name 8">
+<input placeholder="Name 9"><input placeholder="Name 10">
 </div>
-<div class="row">
+<div class="row" style="margin-top:12px">
 <button id="confirmBtn" class="btn btn-primary" type="button" disabled>Confirm</button>
 </div>
 </div>
 </template>
 
-<!-- PENULTIMATE MODAL (only injected for the penultimate tapper) -->
+<!-- PENULTIMATE MODAL -->
 <template id="penultTpl">
 <div class="modal" id="penultModal" role="dialog" aria-modal="true">
 <div class="sheet">
@@ -208,10 +151,12 @@ white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 </div>
 </template>
 
+<!-- Twemoji (official emoji artwork) -->
+<script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
 <script>
 "use strict";
 
-/* Helpers */
+/* ---------- Utilities ---------- */
 const $=id=>document.getElementById(id);
 const qs=new URLSearchParams(location.search);
 const toast=$("toast");
@@ -219,15 +164,27 @@ function say(t,ms=1600){ toast.textContent=t; toast.classList.remove("hidden"); 
 function ringPoints(N){ const L=8,R=92,T=12,B=88,cx=(L+R)/2,cy=(T+B)/2,rx=(R-L)/2,ry=(B-T)/2; const out=[]; for(let i=0;i<N;i++){const a=(2*Math.PI*i)/N-Math.PI/2; out.push({x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)})} return out; }
 function uuid(){ try{ return crypto.randomUUID() } catch(e){ return Math.random().toString(36).slice(2) } }
 
-/* Elements */
+/* Make a node contain the exact Twemoji SVG, recolourable via CSS 'color' */
+async function inlineTwemoji(el){
+// Replace text emoji with <img>
+twemoji.parse(el, {folder:'svg', ext:'.svg'});
+const img = el.querySelector('img');
+if(!img) return;
+const res = await fetch(img.src, {mode:'cors'});
+let svg = await res.text();
+// Force all fills/strokes to follow currentColor so CSS can set grey/green
+svg = svg.replace('<svg ', '<svg role="img" aria-label="Thumbs Down" ')
+.replace('</svg>','<style>svg *{fill:currentColor!important;stroke:currentColor!important}</style></svg>');
+el.innerHTML = svg;
+}
+
+/* ---------- Elements & State ---------- */
 const hostMount=$("hostMount"), tableWrap=$("tableWrap"), board=$("board");
 const revealView=$("revealView"), resetBtn=$("resetBtn");
-const logoBox=$("logoBox"); // to flip + recolor header thumb
+const logoBox=$("logoBox"), logoMark=$("logoMark");
 
-/* State */
 let gameId = qs.get("g") || null;
-let state = null;
-let pollTimer=null;
+let state = null, pollTimer=null;
 let me = {
 isHost: !gameId,
 myName: null,
@@ -237,7 +194,10 @@ clientId: (()=>{ try{ let v=localStorage.getItem("td_client"); if(!v){ v=uuid();
 penultShown: false
 };
 
-/* Mount views */
+/* Inline Twemoji for the logo (fixed green 👎) */
+inlineTwemoji(logoMark);
+
+/* ---------- Mount ---------- */
 if (me.isHost) {
 const tpl=document.getElementById("hostTpl").content.cloneNode(true);
 hostMount.appendChild(tpl);
@@ -255,7 +215,6 @@ const names=getNames(); if(names.length<3){ say("Add at least 3 names"); return;
 const res=await fetch("/api/game",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({names})});
 const data=await res.json(); if(!res.ok){ say(data.error||"Create failed"); return; }
 gameId=data.gameId; state=data.state;
-
 history.replaceState(null,"",location.pathname+"?g="+gameId);
 hostMount.innerHTML=""; resetBtn.classList.add("hidden");
 tableWrap.classList.remove("hidden");
@@ -269,7 +228,7 @@ tableWrap.classList.remove("hidden");
 fetchState();
 }
 
-/* Polling */
+/* ---------- Polling ---------- */
 function startPolling(){ stopPolling(); pollTimer=setInterval(fetchState,2000); window.addEventListener("focus",fetchState); }
 function stopPolling(){ if(pollTimer){clearInterval(pollTimer);pollTimer=null;} window.removeEventListener("focus",fetchState); }
 
@@ -280,47 +239,45 @@ const s=await res.json();
 if(!res.ok){ say(s.error||"Connection error"); return; }
 state=s;
 if(state.revealed){ showReveal(); return; }
-if((state.tapped||[]).length>0){ logoBox.classList.remove("up"); logoBox.classList.add("down"); }
 drawTable(state.names,state.tapped);
 ensureNoPenultModalUnlessEligible();
 }
 
-/* The single thumb glyph (same for logo and chips) */
-function thumbGlyphSVG(fillVar, rotateDeg){
-return `<svg viewBox="0 0 64 64" aria-hidden="true" style="transform:rotate(${rotateDeg}deg)">
-<path class="thumbFill" fill="${fillVar}" d="M24 10c2 0 3.9 1.1 4.9 2.9l7.3 13.5H49c4.8 0 8.6 3.9 8.6 8.6c0 1.5-.4 3-1.1 4.2l-14 22.6c-1.2 1.9-3.5 2.9-5.7 2.4c-2.1-.4-3.7-2.1-4-4.2l-1.2-11H22.7C17.9 49 14 45.1 14 40.3V16.6C14 12.9 17 10 20.7 10H24Z"/>
-<rect x="8" y="16" width="8" height="28" rx="2" ry="2" fill="rgba(255,255,255,.25)"/>
-</svg>`;
-}
-
-/* Table rendering */
+/* ---------- Board ---------- */
 function drawTable(names,tapped){
 board.innerHTML=""; if(!Array.isArray(names)||!names.length) return;
 const pts=ringPoints(names.length);
 names.forEach((nm,i)=>{
-const down=tapped.includes(nm);
+const isDown=tapped.includes(nm);
 const chip=document.createElement("div");
-chip.className="chip"+(down?" down":"");
+chip.className="chip"+(isDown?" down":"");
 chip.style.left=pts[i].x+"%"; chip.style.top=pts[i].y+"%";
 chip.dataset.name=nm;
 
-const rot = down?180:0;
-const fill = down?"var(--green)":"var(--grey)";
-chip.innerHTML = `
-<div class="thumb ${down?'down':'up'}">${thumbGlyphSVG(fill, rot)}</div>
-<div class="nm">${nm}</div>`;
+// Emoji: we use 👎 Twemoji, but style as UP/grey by rotating 180° for pre-tap
+const thumb = document.createElement("div");
+thumb.className="thumb "+(isDown?'down':'up');
+thumb.textContent="👎";
+chip.appendChild(thumb);
+
+const label=document.createElement("div");
+label.className="nm"; label.textContent=nm;
+chip.appendChild(label);
 
 chip.addEventListener("click",()=>onChipClick(nm,chip),{passive:true});
 board.appendChild(chip);
+
+// Inline the Twemoji SVG for this chip (recolorable)
+inlineTwemoji(thumb);
 });
 
-// Local lock: after you’ve tapped, mark others disabled (but keep pointer for wobble)
+// Local one-thumb lock (still allows others to tap theirs)
 if(me.tappedOnce && me.myName){
 [...board.querySelectorAll(".chip")].forEach(c=>{ if(c.dataset.name!==me.myName) c.classList.add("disabled"); });
 }
 }
 
-/* Click handling with wobble for invalid attempts */
+/* Click with wobble for invalid attempts */
 async function onChipClick(name, chip){
 if (me.tappedOnce && me.myName && me.myName !== name){ wobble(chip); return; }
 if (chip.classList.contains("down")){ wobble(chip); return; }
@@ -332,17 +289,13 @@ function wobble(el){ el.classList.remove("wobble"); void el.offsetWidth; el.clas
 async function onTap(name,chip){
 if(!gameId||!state) return; if(state.revealed) return;
 
-// Optimistic: rotate exactly 180°, change to green, lock locally
+// Optimistic: switch to DOWN/green
 chip.classList.add("down");
 const thumb = chip.querySelector(".thumb");
 thumb.classList.remove("up"); thumb.classList.add("down");
-thumb.innerHTML = thumbGlyphSVG("var(--green)", 180);
 me.tappedOnce=true; me.myName=name;
 
-// Make header logo flip/color on first tap
-logoBox.classList.remove("up"); logoBox.classList.add("down");
-
-// Host: share invite on first tap
+// Host: first tap → WhatsApp invite
 if(me.isHost && !me.inviteShared && gameId){
 me.inviteShared=true;
 const inviteURL=location.origin+location.pathname+"?g="+encodeURIComponent(gameId);
@@ -350,19 +303,16 @@ const text=`Thumbs Down — Tap or be tasked.\n${inviteURL}`;
 setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(text); }, 900);
 }
 
-// Send to server (enforces one-thumb-per-device)
-const res=await fetch("/api/tap",{
-method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({gameId,name,clientId:me.clientId})
-});
+// Server: persist the tap
+const res=await fetch("/api/tap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,name,clientId:me.clientId})});
 const s=await res.json(); if(!res.ok){ say(s.error||"Tap failed"); await fetchState(); return; }
-state=s; if((state.tapped||[]).length>0){ logoBox.classList.add("down"); }
+state=s;
 
 maybeShowPenultimate();
 drawTable(state.names,state.tapped);
 }
 
-/* Penultimate gating + modal */
+/* Penultimate gating */
 function maybeShowPenultimate(){
 const remaining=state.names.length-state.tapped.length;
 const iAmTapped=me.myName && state.tapped.includes(me.myName);
@@ -376,6 +326,8 @@ const remaining=state.names.length-state.tapped.length;
 const iAmTapped=me.myName && state.tapped.includes(me.myName);
 if(!(remaining===1 && iAmTapped)){ closePenultModal(); me.penultShown=false; }
 }
+
+/* Modal for penultimate player */
 function openPenultModal(loserName){
 closePenultModal();
 const tpl=document.getElementById("penultTpl").content.cloneNode(true);
@@ -395,7 +347,7 @@ showReveal(); closePenultModal();
 }
 function closePenultModal(){ const m=document.getElementById("penultModal"); if(m) m.remove(); }
 
-/* Reveal */
+/* Reveal view */
 function showReveal(){
 stopPolling();
 $("appView").classList.add("hidden");
@@ -405,7 +357,7 @@ $("dareLine").textContent=state.dare?`Your dare is: ${state.dare}`:"";
 $("meta").textContent=new Date().toLocaleString();
 }
 
-/* Errors */
+/* Error toast */
 window.addEventListener('error',e=>{ try{ say('Error: '+(e.message||'unknown')); }catch(_){} });
 </script>
 </body>
