@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Thumbs Down — Emoji Edition</title>
+<title>Thumbs Down — Flat Olive Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@800;900&family=Pacifico&display=swap" rel="stylesheet">
 <style>
 :root{
 --beige:#F3EADD; --black:#0B0B0C; --black-2:#121316;
 --fg:#ECECEC; --muted:#C0C6CD;
---green:#20C977; --grey:#7D7F84;
+--olive:#9DB86A; /* light olive brand */
+--grey:#8D9197; /* pre-tap thumb */
 --chip:#121316; --chip-b:#1C1F26;
 --shadow:0 18px 50px rgba(0,0,0,.35);
 }
@@ -17,22 +18,22 @@
 html,body{margin:0;height:100%}
 body{background:var(--beige);color:var(--fg);font:16px/1.35 Manrope,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
 
-.wrap{min-height:100%;display:grid;place-items:start;gap:14px;padding:18px 18px 28px;max-width:820px;margin:0 auto}
+.wrap{min-height:100%;display:grid;place-items:start;gap:16px;padding:18px 18px 28px;max-width:820px;margin:0 auto}
 
-/* ====== LOGO AREA (on beige, above the card) ====== */
+/* ===== LOGO (on beige, above the card) ===== */
 .logoRow{width:100%;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
-.logoMark{width:56px;height:56px;display:grid;place-items:center}
-.logoMark svg{width:56px;height:56px;display:block; /* exact Twemoji 👎 with green filter */ }
+.logoMark{width:62px;height:62px;display:grid;place-items:center}
+.logoMark svg{width:62px;height:62px;display:block;color:var(--olive);fill:currentColor}
 .logoWord{line-height:1}
-.title{margin:0;font-size:32px;font-weight:900;color:var(--black);letter-spacing:.2px}
+.title{margin:0;font-size:36px;font-weight:900;letter-spacing:.4px;color:var(--black)}
 .tag{margin:6px 0 0;color:#2B2D30;font-family:Pacifico,cursive;font-size:18px;letter-spacing:.2px}
 
-/* ====== CARD ====== */
+/* ===== CARD ===== */
 .card{width:100%;background:var(--black);border:1px solid rgba(255,255,255,.06);
 border-radius:22px;box-shadow:var(--shadow);padding:18px 18px 26px}
 .header-gap{height:10px}
 
-/* ====== TABLE ====== */
+/* ===== TABLE ===== */
 .table-wrap{display:grid;place-items:center}
 .table{
 width:min(100%,740px);aspect-ratio:16/10;position:relative;border-radius:26px;
@@ -44,7 +45,7 @@ box-shadow:inset 0 10px 24px rgba(255,255,255,.03), inset 0 -10px 22px rgba(0,0,
 box-shadow:inset 0 0 0 6px rgba(255,255,255,.03);pointer-events:none}
 .board{position:absolute;inset:0}
 
-/* ====== CHIPS ====== */
+/* ===== CHIPS ===== */
 .chip{
 position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;gap:4px;
 width:66px;height:66px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-b);
@@ -55,29 +56,20 @@ transition:transform .18s ease
 .nm{font-weight:900;font-size:10px;text-align:center;color:#E6EBEF;padding:0 6px;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip.disabled{opacity:.55;cursor:not-allowed}
 
-/* Twemoji containers — we keep Twemoji’s original fills for full detail, and recolor with CSS filters */
-.thumb{display:grid;place-items:center;width:24px;height:24px;position:relative;transition:transform .28s ease}
-.thumb .em{position:absolute;inset:0;display:grid;place-items:center;transition:opacity .18s ease}
-.thumb svg{width:24px;height:24px;display:block}
+/* Flat thumb icon (uses currentColor for fill) */
+.thumb{display:grid;place-items:center;width:26px;height:26px;position:relative}
+.thumb svg{width:26px;height:26px;display:block;fill:currentColor;transition:transform .28s ease, color .25s ease}
 
-/* State visibility */
-.thumb.up { transform:rotate(180deg) } /* shows 👍, rotated UP */
-.thumb.down { transform:rotate(0deg) } /* shows 👎, normal */
-.thumb.up .em-up {opacity:1} .thumb.up .em-down {opacity:0}
-.thumb.down .em-up {opacity:0} .thumb.down .em-down {opacity:1}
-
-/* Recolor via filters (preserve all Twemoji detail) */
-/* Grey 👍 (pre-tap): */
-.em-up { filter: grayscale(1) brightness(.92) }
-/* Green 👎 (after tap & in logo): use hue/sat/bright to map yellow→brand green while keeping shading */
-.greenize{ filter: hue-rotate(105deg) saturate(220%) brightness(.95) }
+/* States: start UP/grey -> tap -> DOWN/olive */
+.thumb.up svg{ transform:rotate(180deg); color:var(--grey) }
+.thumb.down svg{ transform:rotate(0deg); color:var(--olive) }
 
 /* Wobble for invalid taps */
 @keyframes wobble{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 6px),-50%)}75%{transform:translate(calc(-50% + 6px),-50%)}}
 .chip.wobble{ animation:wobble .28s ease }
 
-/* Host controls row (right aligned, small, side-by-side) */
-.controls{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+/* Host controls: small, side-by-side, right-aligned, with clean spacing */
+.controls{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
 .btn{border:0;border-radius:10px;padding:9px 12px;font:inherit;font-weight:900;cursor:pointer}
 .btn-primary{background:#0EA5E9;color:#fff}
 .btn-ghost{background:#121316;color:#e6e9ef;border:1px solid rgba(255,255,255,.12)}
@@ -99,14 +91,20 @@ transition:transform .18s ease
 .badgeRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px}
 .storeBadge{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 12px;border-radius:8px;background:#111318;color:#E9ECEF;border:1px solid rgba(255,255,255,.12);opacity:.6;pointer-events:none}
 .inactiveNote{margin-top:6px;font-size:12px;color:#666}
-@media (max-width:480px){ .logoMark{width:48px;height:48px} .logoMark svg{width:48px;height:48px} .title{font-size:28px} }
+@media (max-width:480px){ .logoMark{width:52px;height:52px} .logoMark svg{width:52px;height:52px} .title{font-size:32px} }
 </style>
 </head>
 <body>
-<!-- LOGO AREA (emoji on the LEFT of the words, fixed green 👎, no box) -->
+<!-- LOGO (flat olive thumb on the LEFT) -->
 <div class="wrap">
 <div class="logoRow">
-<div id="logoMark" class="logoMark">👎</div>
+<div class="logoMark" aria-hidden="true">
+<!-- Flat thumbs-down mark (base orientation = DOWN) -->
+<svg viewBox="0 0 64 64" focusable="false">
+<path d="M14 28h-6c-2.2 0-4-1.8-4-4v-8c0-2.2 1.8-4 4-4h6c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4Z"/>
+<path d="M22 12h17c5.5 0 9 4.8 8.2 9.6l-1.8 10.8c-.5 3.1-3.2 5.6-6.4 5.6H35l1.1 6.8c.3 2-1 3.9-2.9 4.4-1.2.3-2.5-.1-3.3-1l-7.7-9c-1.5-1.7-2.3-3.9-2.3-6.1V16c0-2.2 1.8-4 4-4Z"/>
+</svg>
+</div>
 <div class="logoWord">
 <p class="title">THUMBS DOWN</p>
 <p class="tag">tap or be tasked</p>
@@ -134,7 +132,7 @@ transition:transform .18s ease
 </div>
 </div>
 
-<!-- Player-only “Host a game” footer -->
+<!-- Player-only footer -->
 <div id="playerFooter" class="player-footer hidden">
 <div style="font-weight:900">Host a game</div>
 <div class="badgeRow">
@@ -177,8 +175,6 @@ transition:transform .18s ease
 </div>
 </template>
 
-<!-- Twemoji (official emoji artwork) -->
-<script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
 <script>
 "use strict";
 
@@ -190,17 +186,13 @@ function say(t,ms=1600){ toast.textContent=t; toast.classList.remove("hidden"); 
 function ringPoints(N){ const L=8,R=92,T=12,B=88,cx=(L+R)/2,cy=(T+B)/2,rx=(R-L)/2,ry=(B-T)/2; const out=[]; for(let i=0;i<N;i++){const a=(2*Math.PI*i)/N-Math.PI/2; out.push({x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)})} return out; }
 function uuid(){ try{ return crypto.randomUUID() } catch(e){ return Math.random().toString(36).slice(2) } }
 
-/* Inline a Twemoji emoji into an element and keep original fills (for full detail) */
-async function inlineTwemoji(el){
-const char = el.textContent;
-el.textContent = char;
-twemoji.parse(el, {folder:'svg', ext:'.svg'});
-const img = el.querySelector('img');
-if(!img) return;
-const res = await fetch(img.src, {mode:'cors'});
-const svg = await res.text(); // keep original fills -> better definition
-el.innerHTML = svg;
-}
+/* ---------- Flat thumb SVG ---------- */
+/* Simple, clean thumb (base = DOWN). We rotate 180° for UP state. */
+const THUMB_SVG = `
+<svg viewBox="0 0 64 64" aria-hidden="true">
+<path d="M14 28h-6c-2.2 0-4-1.8-4-4v-8c0-2.2 1.8-4 4-4h6c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4Z"></path>
+<path d="M22 12h17c5.5 0 9 4.8 8.2 9.6l-1.8 10.8c-.5 3.1-3.2 5.6-6.4 5.6H35l1.1 6.8c.3 2-1 3.9-2.9 4.4-1.2.3-2.5-.1-3.3-1l-7.7-9c-1.5-1.7-2.3-3.9-2.3-6.1V16c0-2.2 1.8-4 4-4Z"></path>
+</svg>`;
 
 /* ---------- Elements & state ---------- */
 const hostMount=$("hostMount"), tableWrap=$("tableWrap"), board=$("board");
@@ -217,13 +209,6 @@ inviteShared: false,
 clientId: (()=>{ try{ let v=localStorage.getItem("td_client"); if(!v){ v=uuid(); localStorage.setItem("td_client", v); } return v; }catch(_){ return uuid(); } })(),
 penultShown: false
 };
-
-/* Logo: fixed green 👎 with preserved detail (apply green filter on the container) */
-(async()=>{
-const logoMark = $("logoMark");
-await inlineTwemoji(logoMark);
-logoMark.firstElementChild.classList.add('greenize'); // apply hue filter to recolor to brand green
-})();
 
 /* ---------- Mount ---------- */
 if (me.isHost) {
@@ -243,8 +228,8 @@ const res=await fetch("/api/game",{method:"POST",headers:{"Content-Type":"applic
 const data=await res.json(); if(!res.ok){ say(data.error||"Create failed"); return; }
 gameId=data.gameId; state=data.state;
 history.replaceState(null,"",location.pathname+"?g="+gameId);
-hostMount.innerHTML=""; // hide host UI for players
-tableWrap.classList.remove("hidden");
+hostMount.innerHTML=""; // hide host UI so players don't see fields
+tableWrap.classList.remove("hidden"); // show table
 drawTable(state.names,state.tapped); startPolling();
 say("Names confirmed. Tap your own name to share the invite.");
 };
@@ -253,7 +238,7 @@ resetBtn.onclick=()=>{ location.href=location.pathname+"?ts="+Date.now(); };
 } else {
 // Player view
 tableWrap.classList.remove("hidden");
-playerFooter.classList.remove("hidden");
+playerFooter.classList.remove("hidden"); // only players see this footer
 fetchState();
 }
 
@@ -285,11 +270,7 @@ chip.dataset.name=nm;
 
 const thumb=document.createElement("div");
 thumb.className="thumb "+(isDown?'down':'up');
-
-const emUp=document.createElement("div"); emUp.className="em em-up"; emUp.textContent="👍";
-const emDown=document.createElement("div"); emDown.className="em em-down greenize"; emDown.textContent="👎";
-
-thumb.appendChild(emUp); thumb.appendChild(emDown);
+thumb.innerHTML = THUMB_SVG; // flat icon (base = DOWN)
 chip.appendChild(thumb);
 
 const label=document.createElement("div");
@@ -298,10 +279,6 @@ chip.appendChild(label);
 
 chip.addEventListener("click",()=>onChipClick(nm,chip),{passive:true});
 board.appendChild(chip);
-
-// Inline official Twemoji SVGs (full detail preserved)
-inlineTwemoji(emUp); // 👍 (will get grey via filter)
-inlineTwemoji(emDown); // 👎 (will get green via filter)
 });
 
 // Local one-thumb lock (UI)
@@ -322,13 +299,12 @@ function wobble(el){ el.classList.remove("wobble"); void el.offsetWidth; el.clas
 async function onTap(name,chip){
 if(!gameId||!state) return; if(state.revealed) return;
 
-// Animate to DOWN: rotate container to 0deg and show green 👎
+// Animate UP -> DOWN (rotate back to 0deg and color to olive)
 const thumb = chip.querySelector(".thumb");
 thumb.classList.remove("up"); thumb.classList.add("down");
 me.tappedOnce=true; me.myName=name;
 
 // Host: first tap → WhatsApp invite
-if(!me.isHost && false){} // players: nothing
 if(me.isHost && !me.inviteShared && gameId){
 me.inviteShared=true;
 const inviteURL=location.origin+location.pathname+"?g="+encodeURIComponent(gameId);
