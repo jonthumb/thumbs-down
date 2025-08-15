@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Thumbs Down — Emoji Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@800;900&family=Pacifico&display=swap" rel="stylesheet">
-
 <style>
 :root{
 --beige:#F3EADD; --black:#0B0B0C; --black-2:#121316;
 --fg:#ECECEC; --muted:#C0C6CD;
---green:#20C977; --grey:#7D7F84;
+--green:#20C977; /* brand green */
+--grey:#7D7F84; /* pre-tap thumb */
 --chip:#121316; --chip-b:#1C1F26;
 --shadow:0 18px 50px rgba(0,0,0,.35);
 }
@@ -21,24 +21,21 @@ body{background:var(--beige);color:var(--fg);font:16px/1.35 Manrope,system-ui,-a
 .card{width:min(100%,760px);background:var(--black);border:1px solid rgba(255,255,255,.06);
 border-radius:22px;box-shadow:var(--shadow);padding:18px 18px 26px}
 
-/* Header / logo */
-.head{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
-.brand{display:flex;gap:14px;align-items:center}
-.logoBox{width:68px;height:68px;border-radius:18px;background:var(--black-2);
-display:grid;place-items:center;border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 22px rgba(0,0,0,.4)}
-.logoBox svg{width:40px;height:40px;display:block;color:var(--green)} /* fixed green 👎; no rotate/grey */
+/* HEADER (logo text left, emoji right) */
+.head{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
+.brand{display:flex;gap:12px;align-items:center;justify-content:space-between;width:100%}
 .wordmark{line-height:1}
 .title{margin:0;font-size:28px;font-weight:900;color:#F7F8F9;letter-spacing:.2px}
-.tag{margin:4px 0 0;color:var(--green);font-family:Pacifico,cursive;font-size:18px;letter-spacing:.2px}
-
+.tag{margin:4px 0 0;color:#EAEAEA;font-family:Pacifico,cursive;font-size:18px;letter-spacing:.2px}
+.logoMark{width:40px;height:40px;display:grid;place-items:center}
+.logoMark svg{width:40px;height:40px;display:block;color:var(--green)} /* fixed green 👎 */
 .btn{border:0;border-radius:12px;padding:12px 14px;font:inherit;font-weight:900;cursor:pointer}
 .btn-primary{background:#0EA5E9;color:#fff;box-shadow:0 10px 22px rgba(14,165,233,.25)}
 .btn-ghost{background:#121316;color:#e6e9ef;border:1px solid rgba(255,255,255,.12)}
 .hidden{display:none}
+.header-gap{height:16px}
 
-.header-gap{height:20px}
-
-/* Table */
+/* TABLE */
 .table-wrap{display:grid;place-items:center}
 .table{
 width:min(100%,740px);aspect-ratio:16/10;position:relative;border-radius:26px;
@@ -50,7 +47,7 @@ box-shadow:inset 0 10px 24px rgba(255,255,255,.03), inset 0 -10px 22px rgba(0,0,
 box-shadow:inset 0 0 0 6px rgba(255,255,255,.03);pointer-events:none}
 .board{position:absolute;inset:0}
 
-/* Chips (emoji buttons) */
+/* CHIPS (seats around the table) */
 .chip{
 position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;gap:4px;
 width:66px;height:66px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-b);
@@ -61,12 +58,20 @@ transition:transform .18s ease
 .nm{font-weight:900;font-size:10px;text-align:center;color:#E6EBEF;padding:0 6px;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip.disabled{opacity:.55;cursor:not-allowed}
 
-/* Twemoji SVG in chips: recoloured via CSS 'color' + rotated for state */
-.thumb svg{width:24px;height:24px;display:block;transition:transform .28s ease, color .25s ease}
-.thumb.up svg{ transform:rotate(180deg); color:var(--grey) } /* 👍 grey (by rotating 👎) */
-.thumb.down svg{ transform:rotate(0deg); color:var(--green) } /* 👎 green */
+/* TWEMOJI inside each chip */
+.thumb{display:grid;place-items:center; width:24px;height:24px; position:relative}
+/* container rotates 180° when going to down state */
+.thumb .em{position:absolute;inset:0;display:grid;place-items:center;transition:opacity .18s ease}
+.thumb svg{width:24px;height:24px;display:block}
+.thumb.up { transition:transform .28s ease; transform:rotate(0deg) } /* shows 👍 */
+.thumb.down { transition:transform .28s ease; transform:rotate(180deg) } /* rotate container 180° */
+.thumb.up .em-up {opacity:1} .thumb.up .em-down {opacity:0}
+.thumb.down .em-up {opacity:0} .thumb.down .em-down {opacity:1}
+/* colors (force SVG paths to follow currentColor) */
+.em-up svg{color:var(--grey)}
+.em-down svg{color:var(--green)}
 
-/* Wobble if invalid tap */
+/* Wobble for invalid taps */
 @keyframes wobble{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 6px),-50%)}75%{transform:translate(calc(-50% + 6px),-50%)}}
 .chip.wobble{ animation:wobble .28s ease }
 
@@ -85,16 +90,14 @@ transition:transform .18s ease
 <body>
 <div class="wrap">
 <div class="card">
-<!-- HEADER: fixed green 👎 -->
+<!-- HEADER: text left, emoji to the right (fixed green 👎) -->
 <div class="head">
-<div class="brand">
-<div id="logoBox" class="logoBox">
-<div id="logoMark">👎</div>
-</div>
+<div class="brand" style="width:100%">
 <div class="wordmark">
 <p class="title">THUMBS DOWN</p>
-<p class="tag">Tap or be tasked</p>
+<p class="tag" style="color:#D7D7D8">tap or be tasked</p>
 </div>
+<div id="logoMark" class="logoMark">👎</div>
 </div>
 <button id="resetBtn" class="btn btn-ghost hidden">Reset</button>
 </div>
@@ -156,7 +159,7 @@ transition:transform .18s ease
 <script>
 "use strict";
 
-/* ---------- Utilities ---------- */
+/* ---------- Helpers ---------- */
 const $=id=>document.getElementById(id);
 const qs=new URLSearchParams(location.search);
 const toast=$("toast");
@@ -164,24 +167,23 @@ function say(t,ms=1600){ toast.textContent=t; toast.classList.remove("hidden"); 
 function ringPoints(N){ const L=8,R=92,T=12,B=88,cx=(L+R)/2,cy=(T+B)/2,rx=(R-L)/2,ry=(B-T)/2; const out=[]; for(let i=0;i<N;i++){const a=(2*Math.PI*i)/N-Math.PI/2; out.push({x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)})} return out; }
 function uuid(){ try{ return crypto.randomUUID() } catch(e){ return Math.random().toString(36).slice(2) } }
 
-/* Make a node contain the exact Twemoji SVG, recolourable via CSS 'color' */
-async function inlineTwemoji(el){
-// Replace text emoji with <img>
+/* Load a specific emoji (👍 or 👎) as exact Twemoji SVG and force fills to follow CSS 'color' */
+async function inlineEmoji(el, char){
+el.textContent = char;
 twemoji.parse(el, {folder:'svg', ext:'.svg'});
 const img = el.querySelector('img');
 if(!img) return;
 const res = await fetch(img.src, {mode:'cors'});
 let svg = await res.text();
-// Force all fills/strokes to follow currentColor so CSS can set grey/green
-svg = svg.replace('<svg ', '<svg role="img" aria-label="Thumbs Down" ')
+svg = svg.replace('<svg ', '<svg role="img" ')
 .replace('</svg>','<style>svg *{fill:currentColor!important;stroke:currentColor!important}</style></svg>');
 el.innerHTML = svg;
 }
 
-/* ---------- Elements & State ---------- */
+/* ---------- Elements & state ---------- */
 const hostMount=$("hostMount"), tableWrap=$("tableWrap"), board=$("board");
 const revealView=$("revealView"), resetBtn=$("resetBtn");
-const logoBox=$("logoBox"), logoMark=$("logoMark");
+const logoMark=$("logoMark");
 
 let gameId = qs.get("g") || null;
 let state = null, pollTimer=null;
@@ -195,7 +197,7 @@ penultShown: false
 };
 
 /* Inline Twemoji for the logo (fixed green 👎) */
-inlineTwemoji(logoMark);
+inlineEmoji(logoMark, "👎");
 
 /* ---------- Mount ---------- */
 if (me.isHost) {
@@ -254,10 +256,14 @@ chip.className="chip"+(isDown?" down":"");
 chip.style.left=pts[i].x+"%"; chip.style.top=pts[i].y+"%";
 chip.dataset.name=nm;
 
-// Emoji: we use 👎 Twemoji, but style as UP/grey by rotating 180° for pre-tap
-const thumb = document.createElement("div");
+// Build the emoji container with two SVGs: 👍 (grey) and 👎 (green)
+const thumb=document.createElement("div");
 thumb.className="thumb "+(isDown?'down':'up');
-thumb.textContent="👎";
+
+const emUp=document.createElement("div"); emUp.className="em em-up"; emUp.textContent="👍";
+const emDown=document.createElement("div"); emDown.className="em em-down"; emDown.textContent="👎";
+
+thumb.appendChild(emUp); thumb.appendChild(emDown);
 chip.appendChild(thumb);
 
 const label=document.createElement("div");
@@ -267,11 +273,12 @@ chip.appendChild(label);
 chip.addEventListener("click",()=>onChipClick(nm,chip),{passive:true});
 board.appendChild(chip);
 
-// Inline the Twemoji SVG for this chip (recolorable)
-inlineTwemoji(thumb);
+// Inline both Twemoji SVGs so they’re exact, and recolour via CSS currentColor
+inlineEmoji(emUp, "👍");
+inlineEmoji(emDown, "👎");
 });
 
-// Local one-thumb lock (still allows others to tap theirs)
+// Local one-thumb lock (UI)
 if(me.tappedOnce && me.myName){
 [...board.querySelectorAll(".chip")].forEach(c=>{ if(c.dataset.name!==me.myName) c.classList.add("disabled"); });
 }
@@ -289,10 +296,10 @@ function wobble(el){ el.classList.remove("wobble"); void el.offsetWidth; el.clas
 async function onTap(name,chip){
 if(!gameId||!state) return; if(state.revealed) return;
 
-// Optimistic: switch to DOWN/green
-chip.classList.add("down");
+// Animate to DOWN: rotate container 180° and swap visible emoji (👍 -> 👎)
 const thumb = chip.querySelector(".thumb");
 thumb.classList.remove("up"); thumb.classList.add("down");
+
 me.tappedOnce=true; me.myName=name;
 
 // Host: first tap → WhatsApp invite
@@ -303,7 +310,7 @@ const text=`Thumbs Down — Tap or be tasked.\n${inviteURL}`;
 setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(text); }, 900);
 }
 
-// Server: persist the tap
+// Persist on server
 const res=await fetch("/api/tap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,name,clientId:me.clientId})});
 const s=await res.json(); if(!res.ok){ say(s.error||"Tap failed"); await fetchState(); return; }
 state=s;
@@ -357,7 +364,11 @@ $("dareLine").textContent=state.dare?`Your dare is: ${state.dare}`:"";
 $("meta").textContent=new Date().toLocaleString();
 }
 
-/* Error toast */
+/* Polling */
+function startPolling(){ stopPolling(); pollTimer=setInterval(fetchState,2000); window.addEventListener("focus",fetchState); }
+function stopPolling(){ if(pollTimer){clearInterval(pollTimer);pollTimer=null;} window.removeEventListener("focus",fetchState); }
+
+/* Errors */
 window.addEventListener('error',e=>{ try{ say('Error: '+(e.message||'unknown')); }catch(_){} });
 </script>
 </body>
