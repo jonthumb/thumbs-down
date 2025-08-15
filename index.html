@@ -282,10 +282,11 @@ if(names.length<3){ toast('Add at least 3 names'); return; }
 const { gameId, state } = await apiCreate(names);
 // hide host setup once created
 $("#host-setup").style.display='none';
-render(state);
-// lock host’s own device only after they tap their name
+// ensure the state we render carries gameId (fixes "missing game ID")
+render({ ...state, gameId });
+// host message
 toast('Game created. Tap your name to start!');
-// Optionally, you can copy/share the link here if you wish.
+// shareable URL
 history.replaceState(null,'',`/?g=${encodeURIComponent(gameId)}`);
 }catch(e){ toast(e.message); }
 });
@@ -298,7 +299,7 @@ location.href='/';
 
 async function onTap(canonicalName, el){
 if(!current) return;
-const gameId = current.gameId;
+const gameId = current.gameId; // now always present thanks to merged render calls
 
 // prevent second tap on this device
 if(localStorage.getItem(`td-lock-${gameId}`)){
@@ -309,7 +310,8 @@ el.classList.add('wobble'); setTimeout(()=>el.classList.remove('wobble'),250); r
 el.classList.add('down'); el.textContent='👎';
 try{
 const state = await apiTap(gameId, canonicalName);
-render(state);
+// keep gameId when re-rendering
+render({ ...state, gameId });
 // lock this device
 localStorage.setItem(`td-lock-${gameId}`, canonicalName);
 
@@ -322,7 +324,7 @@ $("#punisherModal").classList.add('show');
 $("#punisherModal").setAttribute('aria-hidden','false');
 }
 }catch(e){
-// revert UI if server failed
+// revert UI if the server failed
 el.classList.remove('down'); el.textContent='👍';
 toast(e.message);
 }
@@ -343,7 +345,7 @@ $("#punisherModal").classList.remove('show');
 $("#punisherModal").setAttribute('aria-hidden','true');
 
 // Build WhatsApp share text
-const url = location.origin + `/?g=${encodeURIComponent(state.gameId)}&reveal=1`;
+const url = location.origin + `/?g=${encodeURIComponent(current.gameId)}&reveal=1`;
 let text = `Thumbs Down — result:\n\nLoser: ${state.loser || 'unknown'}\nTask: ${state.dare || '(none)'}\n\nOpen: ${url}`;
 const wa = `https://wa.me/?text=${encodeURIComponent(text)}`;
 
@@ -365,83 +367,10 @@ if(g){
 $("#host-setup").style.display='none';
 try{
 const state = await apiState(g);
-render(state);
+// ensure gameId flows into state when joining
+render({ ...state, gameId: g });
 }catch(e){ toast(e.message); }
 }
-})();
-</script>
-<script>
-/* === Thumbs Down: gameId / clientId shim (no visual changes) === */
-(function(){
-// Stable device id (one-tap-per-device uses this; harmless if you already set it elsewhere)
-function getClientId(){
-const k='td-client-id';
-try{
-let v=localStorage.getItem(k);
-if(!v){ v=(crypto.randomUUID?crypto.randomUUID():Date.now()+Math.random().toString(36).slice(2)); localStorage.setItem(k,v); }
-return v;
-}catch(_){
-return Date.now()+Math.random().toString(36).slice(2);
-}
-}
-var clientId = getClientId();
-
-// Seed gameId from URL if present
-var urlParams = new URLSearchParams(location.search);
-var seeded = urlParams.get('g') || null;
-
-// Remembered game id on this page
-if (typeof window.currentGameId === 'undefined') {
-window.currentGameId = seeded;
-}
-
-// Wrap fetch so we can (1) capture gameId after /api/game, (2) inject gameId/clientId for /api/tap & /api/reveal
-var _fetch = window.fetch.bind(window);
-window.fetch = function(input, init){
-init = init || {};
-var url = (typeof input === 'string') ? input : (input && input.url) || '';
-var method = (init.method || 'GET').toUpperCase();
-
-// 1) After creating a game, capture returned gameId so taps have it
-if (url.indexOf('/api/game') !== -1 && method === 'POST') {
-return _fetch(input, init).then(function(res){
-try {
-var clone = res.clone();
-clone.json().then(function(d){
-if (d && d.gameId) {
-window.currentGameId = d.gameId;
-// also expose in DOM for any other scripts
-document.body.dataset.g = d.gameId;
-// ensure URL is shareable (doesn't reload)
-try{ history.replaceState(null,'','?g='+encodeURIComponent(d.gameId)); }catch(_){}
-}
-}).catch(function(){});
-} catch(_) {}
-return res;
-});
-}
-
-// Helper to ensure JSON body exists
-function ensureJsonBody(obj){
-try{
-var body = {};
-if (init.body) body = JSON.parse(init.body);
-// Inject only if missing
-if (!body.gameId) body.gameId = window.currentGameId || document.body.dataset.g || seeded || null;
-if (!body.clientId) body.clientId = clientId;
-init.body = JSON.stringify(body);
-}catch(_){}
-}
-
-// 2) For taps and reveal, inject gameId/clientId if caller forgot
-if (method === 'POST') {
-if (url.indexOf('/api/tap') !== -1 || url.indexOf('/api/reveal') !== -1) {
-ensureJsonBody();
-}
-}
-
-return _fetch(input, init);
-};
 })();
 </script>
 </body>
