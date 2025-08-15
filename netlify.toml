@@ -1,6 +1,9 @@
 [build]
 publish = "."
 
+[functions]
+directory = "netlify/functions"
+
 [[redirects]]
 from = "/api/game"
 to = "/.netlify/functions/game"
