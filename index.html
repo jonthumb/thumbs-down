@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Thumbs Down — Flat Olive Edition</title>
+<title>Thumbs Down — Grass Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@800;900&family=Pacifico&display=swap" rel="stylesheet">
 <style>
 :root{
 --beige:#F3EADD; --black:#0B0B0C; --black-2:#121316;
 --fg:#ECECEC; --muted:#C0C6CD;
---olive:#9DB86A; /* light olive brand */
---grey:#8D9197; /* pre-tap thumb */
+--grass:#32C759; /* new grass green */
+--grey:#8D9197; /* pre-tap grey */
 --chip:#121316; --chip-b:#1C1F26;
 --shadow:0 18px 50px rgba(0,0,0,.35);
 }
@@ -20,13 +20,16 @@ body{background:var(--beige);color:var(--fg);font:16px/1.35 Manrope,system-ui,-a
 
 .wrap{min-height:100%;display:grid;place-items:start;gap:16px;padding:18px 18px 28px;max-width:820px;margin:0 auto}
 
-/* ===== LOGO (on beige, above the card) ===== */
-.logoRow{width:100%;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
-.logoMark{width:62px;height:62px;display:grid;place-items:center}
-.logoMark svg{width:62px;height:62px;display:block;color:var(--olive);fill:currentColor}
+/* ===== LOGO WORDMARK (single piece) ===== */
 .logoWord{line-height:1}
-.title{margin:0;font-size:36px;font-weight:900;letter-spacing:.4px;color:var(--black)}
-.tag{margin:6px 0 0;color:#2B2D30;font-family:Pacifico,cursive;font-size:18px;letter-spacing:.2px}
+.title{
+margin:0;
+font-size:40px; /* bigger & bolder for impact */
+font-weight:900;
+letter-spacing:.6px;
+color:var(--black);
+}
+.tag{margin:8px 0 0;color:#2B2D30;font-family:Pacifico,cursive;font-size:18px}
 
 /* ===== CARD ===== */
 .card{width:100%;background:var(--black);border:1px solid rgba(255,255,255,.06);
@@ -56,13 +59,13 @@ transition:transform .18s ease
 .nm{font-weight:900;font-size:10px;text-align:center;color:#E6EBEF;padding:0 6px;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip.disabled{opacity:.55;cursor:not-allowed}
 
-/* Flat thumb icon (uses currentColor for fill) */
+/* Flat thumb icon (single simple shape; uses currentColor) */
 .thumb{display:grid;place-items:center;width:26px;height:26px;position:relative}
 .thumb svg{width:26px;height:26px;display:block;fill:currentColor;transition:transform .28s ease, color .25s ease}
 
-/* States: start UP/grey -> tap -> DOWN/olive */
+/* States: start UP/grey -> tap -> DOWN/grass */
 .thumb.up svg{ transform:rotate(180deg); color:var(--grey) }
-.thumb.down svg{ transform:rotate(0deg); color:var(--olive) }
+.thumb.down svg{ transform:rotate(0deg); color:var(--grass) }
 
 /* Wobble for invalid taps */
 @keyframes wobble{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 6px),-50%)}75%{transform:translate(calc(-50% + 6px),-50%)}}
@@ -75,8 +78,12 @@ transition:transform .18s ease
 .btn-ghost{background:#121316;color:#e6e9ef;border:1px solid rgba(255,255,255,.12)}
 .btn.small{padding:8px 10px;font-size:13px}
 
-/* Toast */
-.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#121316;border:1px solid rgba(255,255,255,.12);padding:10px 14px;border-radius:12px;font-weight:900;z-index:50}
+/* Toast: fades out after 2s */
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+background:#121316;border:1px solid rgba(255,255,255,.12);
+padding:10px 14px;border-radius:12px;font-weight:900;z-index:50;
+opacity:0; transition:opacity .25s ease}
+.toast.show{opacity:1}
 
 /* Modal (penultimate) */
 .modal{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);z-index:60}
@@ -91,24 +98,14 @@ transition:transform .18s ease
 .badgeRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px}
 .storeBadge{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 12px;border-radius:8px;background:#111318;color:#E9ECEF;border:1px solid rgba(255,255,255,.12);opacity:.6;pointer-events:none}
 .inactiveNote{margin-top:6px;font-size:12px;color:#666}
-@media (max-width:480px){ .logoMark{width:52px;height:52px} .logoMark svg{width:52px;height:52px} .title{font-size:32px} }
 </style>
 </head>
 <body>
-<!-- LOGO (flat olive thumb on the LEFT) -->
+<!-- SIMPLE LOGO WORDMARK (on beige, above the card) -->
 <div class="wrap">
-<div class="logoRow">
-<div class="logoMark" aria-hidden="true">
-<!-- Flat thumbs-down mark (base orientation = DOWN) -->
-<svg viewBox="0 0 64 64" focusable="false">
-<path d="M14 28h-6c-2.2 0-4-1.8-4-4v-8c0-2.2 1.8-4 4-4h6c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4Z"/>
-<path d="M22 12h17c5.5 0 9 4.8 8.2 9.6l-1.8 10.8c-.5 3.1-3.2 5.6-6.4 5.6H35l1.1 6.8c.3 2-1 3.9-2.9 4.4-1.2.3-2.5-.1-3.3-1l-7.7-9c-1.5-1.7-2.3-3.9-2.3-6.1V16c0-2.2 1.8-4 4-4Z"/>
-</svg>
-</div>
 <div class="logoWord">
 <p class="title">THUMBS DOWN</p>
 <p class="tag">tap or be tasked</p>
-</div>
 </div>
 
 <div class="card">
@@ -142,7 +139,7 @@ transition:transform .18s ease
 <div class="inactiveNote">Currently inactive, awaiting uploads to App Stores.</div>
 </div>
 
-<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 </div>
 
 <!-- HOST TEMPLATE (only when there is no ?g=) -->
@@ -182,12 +179,16 @@ transition:transform .18s ease
 const $=id=>document.getElementById(id);
 const qs=new URLSearchParams(location.search);
 const toast=$("toast");
-function say(t,ms=1600){ toast.textContent=t; toast.classList.remove("hidden"); clearTimeout(say._t); say._t=setTimeout(()=>toast.classList.add("hidden"),ms); }
+function say(t,ms=2000){ // 2s fade-away
+toast.textContent=t;
+toast.classList.add("show");
+clearTimeout(say._t);
+say._t=setTimeout(()=>toast.classList.remove("show"),ms);
+}
 function ringPoints(N){ const L=8,R=92,T=12,B=88,cx=(L+R)/2,cy=(T+B)/2,rx=(R-L)/2,ry=(B-T)/2; const out=[]; for(let i=0;i<N;i++){const a=(2*Math.PI*i)/N-Math.PI/2; out.push({x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)})} return out; }
 function uuid(){ try{ return crypto.randomUUID() } catch(e){ return Math.random().toString(36).slice(2) } }
 
-/* ---------- Flat thumb SVG ---------- */
-/* Simple, clean thumb (base = DOWN). We rotate 180° for UP state. */
+/* ---------- Flat thumb SVG (base = DOWN). We rotate to get UP. ---------- */
 const THUMB_SVG = `
 <svg viewBox="0 0 64 64" aria-hidden="true">
 <path d="M14 28h-6c-2.2 0-4-1.8-4-4v-8c0-2.2 1.8-4 4-4h6c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4Z"></path>
@@ -269,7 +270,7 @@ chip.style.left=pts[i].x+"%"; chip.style.top=pts[i].y+"%";
 chip.dataset.name=nm;
 
 const thumb=document.createElement("div");
-thumb.className="thumb "+(isDown?'down':'up');
+thumb.className="thumb "+(isDown?'down':'up'); // start UP/grey
 thumb.innerHTML = THUMB_SVG; // flat icon (base = DOWN)
 chip.appendChild(thumb);
 
@@ -299,9 +300,11 @@ function wobble(el){ el.classList.remove("wobble"); void el.offsetWidth; el.clas
 async function onTap(name,chip){
 if(!gameId||!state) return; if(state.revealed) return;
 
-// Animate UP -> DOWN (rotate back to 0deg and color to olive)
+// Animate UP -> DOWN (rotate back to 0deg and color to grass)
 const thumb = chip.querySelector(".thumb");
 thumb.classList.remove("up"); thumb.classList.add("down");
+thumb.querySelector('svg').style.color = getComputedStyle(document.documentElement).getPropertyValue('--grass');
+
 me.tappedOnce=true; me.myName=name;
 
 // Host: first tap → WhatsApp invite
