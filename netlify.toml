@@ -6,20 +6,20 @@ directory = "netlify/functions"
 
 [[redirects]]
 from = "/api/game"
-to = "/.netlify/functions/game"
+to = "/netlify/functions/game"
 status = 200
 
 [[redirects]]
 from = "/api/state"
-to = "/.netlify/functions/state"
+to = "/netlify/functions/state"
 status = 200
 
 [[redirects]]
 from = "/api/tap"
-to = "/.netlify/functions/tap"
+to = "/netlify/functions/tap"
 status = 200
 
 [[redirects]]
 from = "/api/reveal"
-to = "/.netlify/functions/reveal"
+to = "/netlify/functions/reveal"
 status = 200
