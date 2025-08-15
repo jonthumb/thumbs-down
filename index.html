@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Thumbs Down — Forest Edition</title>
-<!-- WhatsApp & Social Preview Image -->
-<meta property="og:image" content="https://thumbsdown.netlify.app/Thumbs%20Down.png">
-<meta name="twitter:image" content="https://thumbsdown.netlify.app/Thumbs%20Down.png">
-<meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<title>Thumbs Down</title>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@800;900&family=Pacifico&display=swap" rel="stylesheet">
+
+<!-- Social preview (optional): update YOUR-SITE below if you want a nice WhatsApp banner -->
+<meta property="og:title" content="Thumbs Down — Tap Late, Face Fate">
+<meta property="og:description" content="Tap fast with your friends. The last to tap faces a dare… or escapes with a smart answer.">
+<meta property="og:image" content="https://YOUR-SITE.netlify.app/Thumbs%20Down.png">
+<meta property="og:type" content="website">
+
 <style>
 :root{
 --beige:#F3EADD; --black:#0B0B0C; --black-2:#121316;
 --fg:#ECECEC; --muted:#C0C6CD;
---forest:#3BA164; /* forest/grass green (logo + table DOWN) */
+--forest:#2F8D52; /* forest/grass green (logo + table DOWN) */
 --grey:#8D9197; /* table UP grey */
 --chip:#121316; --chip-b:#1C1F26;
 --shadow:0 18px 50px rgba(0,0,0,.35);
@@ -26,15 +27,16 @@ body{background:var(--beige);color:var(--fg);font:16px/1.35 Manrope,system-ui,-a
 
 .wrap{min-height:100%;display:grid;place-items:start;gap:16px;padding:18px 18px 28px;max-width:820px;margin:0 auto}
 
-/* ===== TOP LOGO (one-line header; tagline below right) ===== */
+/* ===== TOP LOGO (thumb on left; title one line; tagline below right) ===== */
 .logoWrap{width:100%;display:grid;grid-template-rows:auto auto;row-gap:6px}
 .logoHeader{display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
-.logoMark{width:62px;height:62px;display:grid;place-items:center;flex:0 0 auto}
-.logoMark svg{width:62px;height:62px;display:block;fill:var(--forest)} /* flat DOWN thumb */
+.logoMark{width:64px;height:64px;display:grid;place-items:center;flex:0 0 auto}
+.logoMark svg{width:64px;height:64px;display:block;fill:var(--forest)}
 .title{
 margin:0;
-font-size:clamp(28px, 6vw, 42px); /* scales on small screens, stays one line */
-font-weight:900; letter-spacing:.6px; color:#121417; white-space:nowrap
+font-size:clamp(30px, 7.2vw, 56px); /* big, but scales down on small screens */
+font-weight:900; letter-spacing:.7px; color:#121417;
+white-space:nowrap; line-height:1;
 }
 .tag{margin:0;color:#2B2D30;font-family:Pacifico,cursive;font-size:18px;justify-self:end}
 
@@ -43,7 +45,7 @@ font-weight:900; letter-spacing:.6px; color:#121417; white-space:nowrap
 border-radius:22px;box-shadow:var(--shadow);padding:18px 18px 26px}
 .header-gap{height:10px}
 
-/* ===== TABLE (visual board) ===== */
+/* ===== TABLE ===== */
 .table-wrap{display:grid;place-items:center}
 .table{
 width:min(100%,740px);aspect-ratio:16/10;position:relative;border-radius:26px;
@@ -55,7 +57,7 @@ box-shadow:inset 0 10px 24px rgba(255,255,255,.03), inset 0 -10px 22px rgba(0,0,
 box-shadow:inset 0 0 0 6px rgba(255,255,255,.03);pointer-events:none}
 .board{position:absolute;inset:0}
 
-/* ===== CHIPS (seats around table) ===== */
+/* ===== CHIPS ===== */
 .chip{
 position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;gap:4px;
 width:66px;height:66px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-b);
@@ -66,10 +68,9 @@ transition:transform .18s ease
 .nm{font-weight:900;font-size:10px;text-align:center;color:#E6EBEF;padding:0 6px;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip.disabled{opacity:.55;cursor:not-allowed}
 
-/* Flat thumb icon (single simple SVG; color via currentColor) */
+/* Flat thumb icon (color via currentColor). Base art points DOWN; we rotate to show UP. */
 .thumb{display:grid;place-items:center;width:26px;height:26px;position:relative}
 .thumb svg{width:26px;height:26px;display:block;fill:currentColor;transition:transform .28s ease, color .25s ease}
-/* States: start UP/grey -> tap -> DOWN/forest */
 .thumb.up svg{ transform:rotate(180deg); color:var(--grey) }
 .thumb.down svg{ transform:rotate(0deg); color:var(--forest) }
 
@@ -77,14 +78,14 @@ transition:transform .18s ease
 @keyframes wobble{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 6px),-50%)}75%{transform:translate(calc(-50% + 6px),-50%)}}
 .chip.wobble{ animation:wobble .28s ease }
 
-/* Host controls: small, side-by-side, right-aligned */
+/* Host controls */
 .controls{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
 .btn{border:0;border-radius:10px;padding:9px 12px;font:inherit;font-weight:900;cursor:pointer}
 .btn-primary{background:#0EA5E9;color:#fff}
 .btn-ghost{background:#121316;color:#e6e9ef;border:1px solid rgba(255,255,255,.12)}
 .btn.small{padding:8px 10px;font-size:13px}
 
-/* Toast: fades out after 2s */
+/* Toast */
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
 background:#121316;border:1px solid rgba(255,255,255,.12);
 padding:10px 14px;border-radius:12px;font-weight:900;z-index:50;
@@ -99,11 +100,13 @@ opacity:0; transition:opacity .25s ease}
 .row{display:grid;grid-template-columns:1fr auto;gap:8px}
 .row input{background:#121316;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#E6E9EF;padding:12px}
 
-/* Player-only footer: Host a game + store badges (inactive) */
+/* Player-only footer */
 .player-footer{margin-top:12px;color:#2B2D30}
 .badgeRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px}
 .storeBadge{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 12px;border-radius:8px;background:#111318;color:#E9ECEF;border:1px solid rgba(255,255,255,.12);opacity:.6;pointer-events:none}
 .inactiveNote{margin-top:6px;font-size:12px;color:#666}
+
+.hidden{display:none !important}
 </style>
 </head>
 <body>
@@ -112,15 +115,15 @@ opacity:0; transition:opacity .25s ease}
 <div class="logoWrap">
 <div class="logoHeader">
 <div class="logoMark" aria-hidden="true">
-<!-- Flat thumbs-down mark (base = DOWN) -->
-<svg viewBox="0 0 64 64" focusable="false">
+<!-- Flat thumbs-down mark (base art = DOWN) -->
+<svg viewBox="0 0 64 64" focusable="false" aria-hidden="true">
 <path d="M14 28h-6c-2.2 0-4-1.8-4-4v-8c0-2.2 1.8-4 4-4h6c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4Z"></path>
 <path d="M22 12h17c5.5 0 9 4.8 8.2 9.6l-1.8 10.8c-.5 3.1-3.2 5.6-6.4 5.6H35l1.1 6.8c.3 2-1 3.9-2.9 4.4-1.2.3-2.5-.1-3.3-1l-7.7-9c-1.5-1.7-2.3-3.9-2.3-6.1V16c0-2.2 1.8-4 4-4Z"></path>
 </svg>
 </div>
 <h1 class="title">THUMBS DOWN</h1>
 </div>
-<p class="tag">Last to Tap Gets Punished</p>
+<p class="tag">Tap Late, Face Fate</p>
 </div>
 
 <div class="card">
@@ -176,17 +179,20 @@ opacity:0; transition:opacity .25s ease}
 </div>
 </template>
 
-<!-- PENULTIMATE MODAL (only the penultimate user sees this) -->
+<!-- PENULTIMATE MODAL (Punisher MUST set BOTH Dare and Get-out Question) -->
 <template id="penultTpl">
 <div class="modal" id="penultModal" role="dialog" aria-modal="true">
 <div class="sheet">
 <div class="h">Congratulations! You are the Punisher.</div>
 <div class="p" id="penultLine2"></div>
-<div class="p">Now set them their dare or task.</div>
-<div class="row">
-<input id="dareInput" maxlength="50" placeholder="Dare or task (≤ 50 chars)" />
-<button id="confirmDare" class="btn btn-primary" type="button">Share back to your group</button>
+<div class="p">Now set them their <strong>Dare/Task</strong> <em>and</em> a <strong>Get-out Question</strong> (about someone in the group):</div>
+
+<div class="row" style="margin-bottom:6px">
+<input id="dareInput" maxlength="80" placeholder="Dare or task (≤ 80 chars)" />
+<button id="shareToGroupBtn" class="btn btn-primary" type="button" disabled>Share back to your group</button>
 </div>
+
+<input id="getOutInput" maxlength="100" placeholder="e.g., “What’s Sam’s dog called?” (≤ 100 chars)" style="background:#121316;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#E6E9EF;padding:12px">
 </div>
 </div>
 </template>
@@ -198,35 +204,40 @@ opacity:0; transition:opacity .25s ease}
 const $=id=>document.getElementById(id);
 const qs=new URLSearchParams(location.search);
 const toast=$("toast");
-function say(t,ms=2000){ // 2s fade-away
-toast.textContent=t;
-toast.classList.add("show");
-clearTimeout(say._t);
-say._t=setTimeout(()=>toast.classList.remove("show"),ms);
-}
+function say(t,ms=2000){ toast.textContent=t; toast.classList.add("show"); clearTimeout(say._t); say._t=setTimeout(()=>toast.classList.remove("show"),ms); }
 function ringPoints(N){ const L=8,R=92,T=12,B=88,cx=(L+R)/2,cy=(T+B)/2,rx=(R-L)/2,ry=(B-T)/2; const out=[]; for(let i=0;i<N;i++){const a=(2*Math.PI*i)/N-Math.PI/2; out.push({x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)})} return out; }
 function uuid(){ try{ return crypto.randomUUID() } catch(e){ return Math.random().toString(36).slice(2) } }
 
-/* ---------- Flat thumb SVG (base = DOWN). We rotate to get UP. ---------- */
+/* ---------- Flat thumb SVG (base art = DOWN). Rotate 180° for UP ---------- */
 const THUMB_SVG = `
 <svg viewBox="0 0 64 64" aria-hidden="true">
 <path d="M14 28h-6c-2.2 0-4-1.8-4-4v-8c0-2.2 1.8-4 4-4h6c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4Z"></path>
 <path d="M22 12h17c5.5 0 9 4.8 8.2 9.6l-1.8 10.8c-.5 3.1-3.2 5.6-6.4 5.6H35l1.1 6.8c.3 2-1 3.9-2.9 4.4-1.2.3-2.5-.1-3.3-1l-7.7-9c-1.5-1.7-2.3-3.9-2.3-6.1V16c0-2.2 1.8-4 4-4Z"></path>
 </svg>`;
 
-/* ---------- Elements & state ---------- */
+/* ---------- Elements & initial state ---------- */
 const hostMount=$("hostMount"), tableWrap=$("tableWrap"), board=$("board");
 const revealView=$("revealView");
 const playerFooter=$("playerFooter");
 
 let gameId = qs.get("g") || null;
 let state = null, pollTimer=null;
+
+/* Make (or read) a private device ID once — no prompts to the user */
+let clientId = null;
+try {
+clientId = localStorage.getItem('td_client');
+if (!clientId) { clientId = uuid(); localStorage.setItem('td_client', clientId); }
+} catch (_) {
+clientId = uuid();
+}
+
 let me = {
 isHost: !gameId,
 myName: null,
 tappedOnce: false,
 inviteShared: false,
-clientId: (()=>{ try{ let v=localStorage.getItem("td_client"); if(!v){ v=uuid(); localStorage.setItem("td_client", v); } return v; }catch(_){ return uuid(); } })(),
+clientId,
 penultShown: false
 };
 
@@ -256,7 +267,6 @@ say("Names confirmed. Tap your own name to share the invite.");
 
 resetBtn.onclick=()=>{ location.href=location.pathname+"?ts="+Date.now(); };
 } else {
-// Player view
 tableWrap.classList.remove("hidden");
 playerFooter.classList.remove("hidden"); // only players see this footer
 fetchState();
@@ -290,7 +300,7 @@ chip.dataset.name=nm;
 
 const thumb=document.createElement("div");
 thumb.className="thumb "+(isDown?'down':'up'); // start UP/grey
-thumb.innerHTML = THUMB_SVG; // flat icon (base = DOWN)
+thumb.innerHTML = THUMB_SVG; // base art DOWN; CSS rotates for UP
 chip.appendChild(thumb);
 
 const label=document.createElement("div");
@@ -301,7 +311,7 @@ chip.addEventListener("click",()=>onChipClick(nm,chip),{passive:true});
 board.appendChild(chip);
 });
 
-// Local one-thumb lock (UI)
+// Local UI lock: once I’ve tapped, grey out other chips
 if(me.tappedOnce && me.myName){
 [...board.querySelectorAll(".chip")].forEach(c=>{ if(c.dataset.name!==me.myName) c.classList.add("disabled"); });
 }
@@ -315,32 +325,47 @@ onTap(name, chip);
 }
 function wobble(el){ el.classList.remove("wobble"); void el.offsetWidth; el.classList.add("wobble"); }
 
-/* Tap flow */
+/* Tap flow — ask server FIRST, then animate only if accepted */
 async function onTap(name,chip){
-if(!gameId||!state) return; if(state.revealed) return;
+if(!gameId||!state||state.revealed) return;
 
-// Animate UP -> DOWN (rotate to 0deg & color = forest)
-const thumb = chip.querySelector(".thumb");
-thumb.classList.remove("up"); thumb.classList.add("down");
-thumb.querySelector('svg').style.color = getComputedStyle(document.documentElement).getPropertyValue('--forest');
+chip.classList.add('disabled'); // block double clicks while we wait
 
-me.tappedOnce=true; me.myName=name;
+const res = await fetch("/api/tap", {
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body: JSON.stringify({ gameId, name, clientId: me.clientId })
+});
+const s = await res.json();
 
-// Host: first tap → WhatsApp invite
-if(me.isHost && !me.inviteShared && gameId){
-me.inviteShared=true;
-const inviteURL=location.origin+location.pathname+"?g="+encodeURIComponent(gameId);
-const text=`Thumbs Down — Last to Tap Gets Punished.\n${inviteURL}`;
-setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(text); }, 900);
+if (!res.ok) {
+chip.classList.remove('disabled');
+wobble(chip);
+say(s.error || "You can't tap another name in this game.");
+fetchState(); // resync
+return;
 }
 
-// Persist on server
-const res=await fetch("/api/tap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,name,clientId:me.clientId})});
-const s=await res.json(); if(!res.ok){ say(s.error||"Tap failed"); await fetchState(); return; }
-state=s;
+// Success: animate UP -> DOWN and mark local
+const thumb = chip.querySelector(".thumb");
+thumb.classList.remove("up");
+thumb.classList.add("down");
+thumb.querySelector('svg').style.color =
+getComputedStyle(document.documentElement).getPropertyValue('--forest');
 
+me.tappedOnce = true;
+me.myName = name;
+state = s;
+drawTable(state.names, state.tapped);
 maybeShowPenultimate();
-drawTable(state.names,state.tapped);
+
+// Host: first tap → share invite
+if(me.isHost && !me.inviteShared && gameId){
+me.inviteShared = true;
+const inviteURL = location.origin + location.pathname + "?g=" + encodeURIComponent(gameId);
+const text = `Thumbs Down — Tap Late, Face Fate.\n${inviteURL}`;
+setTimeout(()=>{ location.href="https://wa.me/?text="+encodeURIComponent(text); }, 900);
+}
 }
 
 /* Penultimate gating */
@@ -358,28 +383,63 @@ const iAmTapped=me.myName && state.tapped.includes(me.myName);
 if(!(remaining===1 && iAmTapped)){ closePenultModal(); me.penultShown=false; }
 }
 
-/* Modal for penultimate player (new wording) */
+/* Modal for penultimate player — MUST set Dare AND Get-out Question */
 function openPenultModal(loserName){
 closePenultModal();
 const tpl=document.getElementById("penultTpl").content.cloneNode(true);
 document.body.appendChild(tpl);
+
 const line2 = document.getElementById("penultLine2");
 line2.textContent = `The person who didn't tap their name is ${loserName} and must be punished.`;
-document.getElementById("confirmDare").onclick=async ()=>{
-const dv=(document.getElementById("dareInput").value||"").trim().slice(0,50);
-if(!dv){ say("Type a dare or task first"); return; }
-const res=await fetch("/api/reveal",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,dare:dv})});
+
+const dareInput = document.getElementById("dareInput");
+const getOutInput = document.getElementById("getOutInput");
+const shareBtn = document.getElementById("shareToGroupBtn");
+
+function validate(){ shareBtn.disabled = !(dareInput.value.trim() && getOutInput.value.trim()); }
+dareInput.addEventListener('input',validate,{passive:true});
+getOutInput.addEventListener('input',validate,{passive:true});
+validate();
+
+shareBtn.onclick = async ()=>{
+const dare = dareInput.value.trim().slice(0,80);
+const getOut = getOutInput.value.trim().slice(0,100);
+if(!dare || !getOut){ say("Please set BOTH a Dare and a Get-out Question"); return; }
+
+// Lock reveal (uses your existing /api/reveal)
+const res=await fetch("/api/reveal",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId,dare})});
 const s=await res.json(); if(!res.ok){ say(s.error||"Reveal failed"); return; }
 state=s;
-const revealURL=location.origin+location.pathname+"?g="+encodeURIComponent(gameId);
-const text=`👉 Click to reveal the loser:\n${revealURL}`;
-location.href="https://wa.me/?text="+encodeURIComponent(text);
-showReveal(); closePenultModal();
+
+// WhatsApp message aimed at the loser, with clear instructions
+const roomURL=location.origin+location.pathname+"?g="+encodeURIComponent(gameId);
+const parts=[
+"🟢 Thumbs Down — Result",
+`Loser: ${loserName}`,
+`Dare/Task: ${dare}`,
+`Get-out Question: ${getOut}`,
+"",
+`👉 ${loserName}, reply here in this chat EITHER`,
+"• with “ACCEPT” (you accept the dare), OR",
+"• with your answer to the get-out question.",
+"The group will decide if your answer is correct, or if you still have to do the dare.",
+"",
+`View the table / live status: ${roomURL}`
+].join("\n");
+
+if(navigator.share){
+try{ await navigator.share({ text: parts }); }catch(_){}
+} else {
+location.href = "https://wa.me/?text="+encodeURIComponent(parts);
+}
+
+showReveal();
+closePenultModal();
 };
 }
 function closePenultModal(){ const m=document.getElementById("penultModal"); if(m) m.remove(); }
 
-/* Reveal view (keeps simple wording) */
+/* Reveal view */
 function showReveal(){
 stopPolling();
 $("appView").classList.add("hidden");
@@ -388,10 +448,6 @@ $("headline").textContent=`Today's loser is ${state.loser||"someone"}.`;
 $("dareLine").textContent=state.dare?`Dare/Task: ${state.dare}`:"";
 $("meta").textContent=new Date().toLocaleString();
 }
-
-/* Polling */
-function startPolling(){ stopPolling(); pollTimer=setInterval(fetchState,2000); window.addEventListener("focus",fetchState); }
-function stopPolling(){ if(pollTimer){clearInterval(pollTimer);pollTimer=null;} window.removeEventListener("focus",fetchState); }
 
 /* Errors */
 window.addEventListener('error',e=>{ try{ say('Error: '+(e.message||'unknown')); }catch(_){} });
