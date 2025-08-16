@@ -1,25 +1,8 @@
 [build]
-publish = "."
+publish = "build" # or "dist" if that's your output folder
+command = "" # leave empty since you don’t need a build step for plain HTML
 
-[functions]
-directory = "netlify/functions"
-
-[[redirects]]
-from = "/api/game"
-to = "/.netlify/functions/game"
-status = 200
-
-[[redirects]]
-from = "/api/state"
-to = "/.netlify/functions/state"
-status = 200
-
-[[redirects]]
-from = "/api/tap"
-to = "/.netlify/functions/tap"
-status = 200
-
-[[redirects]]
-from = "/api/reveal"
-to = "/.netlify/functions/reveal"
-status = 200
+[dev]
+command = "npm run start"
+port = 8888
+publish = "build"
