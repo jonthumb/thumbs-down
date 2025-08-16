@@ -1,4 +1,4 @@
 [build]
-publish = "."
+publish = "/"
 [functions]
 directory = "netlify/functions"
